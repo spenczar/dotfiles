@@ -1,0 +1,91 @@
+go build
+ls
+echo $(PWD)
+echo $(pwd)
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+git status
+git wdiff
+git add checks/http.go 
+git commit -m "Close response bodies. Remove unused import."
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+ls
+cd ../
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+git status
+git diff
+git wdiff
+go get -u github.com/dougm/goflymake
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+cd code/go/src/git.internal.justin.tv/
+ls
+cd datavis/
+cd gocheck/
+ls
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/configa.json./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/configa.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/configa.json
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+2015/01/26 19:01:44 web / channel: true
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+2015/01/26 19:03:58 web / frontpage: true
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
+go build
+./gocheck --conf=/Users/spencernelson/code/go/src/git.internal.justin.tv/datavis/gocheck/config.json
