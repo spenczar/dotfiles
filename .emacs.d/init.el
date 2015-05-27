@@ -99,8 +99,14 @@
   (custom-set-faces
    '(flymake-errline ((((class color)) (:background "red"))))
    '(flymake-warnline ((((class color)) (:background "yellow")))))
+
+  (global-set-key (kbd "M-n") 'flymake-goto-next-error)
+  (global-set-key (kbd "M-p") 'flymake-goto-prev-error)
   )
 
+(custom-set-variables
+ '(help-at-pt-timer-delay 0.0)
+      '(help-at-pt-display-when-idle '(flymake-overlay)))
 (add-hook 'find-file-hook 'flymake-find-file-hook)
 
 ;;; Electric Pairs
