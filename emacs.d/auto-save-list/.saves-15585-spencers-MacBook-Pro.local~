@@ -1,0 +1,8 @@
+/scpc:deploy@local.zerocater.com:/project/zerocater/current/zerocater/mealplanner/tests.py
+#_ascpc_bdeploy@local.zerocater.com_b_aproject_azerocater_acurrent_azerocater_amealplanner_atests.py#
+/scpc:deploy@local.zerocater.com:/project/zerocater/current/zerocater/mealplanner/models.py
+#_ascpc_bdeploy@local.zerocater.com_b_aproject_azerocater_acurrent_azerocater_amealplanner_amodels.py#
+/scpc:deploy@local.zerocater.com:/project/zerocater/current/zerocater/mealplanner/__init__.py
+#_ascpc_bdeploy@local.zerocater.com_b_aproject_azerocater_acurrent_azerocater_amealplanner_a____init____.py#
+/scpc:deploy@local.zerocater.com:/project/zerocater/current/zerocater/mealplanner/views.py
+#_ascpc_bdeploy@local.zerocater.com_b_aproject_azerocater_acurrent_azerocater_amealplanner_aviews.py#
