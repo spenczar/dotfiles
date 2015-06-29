@@ -1,13 +1,17 @@
-(require 'cask "/usr/local/Cellar/cask/0.7.2/cask.el")
-(cask-initialize)
-(require 'pallet)
-(pallet-mode t)
-
 (require 'windmove)
 (global-set-key (kbd "s-J")  'windmove-left)
 (global-set-key (kbd "s-L") 'windmove-right)
 (global-set-key (kbd "s-I")    'windmove-up)
 (global-set-key (kbd "s-K")  'windmove-down)
+
+(require 'package)
+(add-to-list
+ 'package-archives
+ '("melpa" . "http://melpa.org/packages/")
+ t)
+(package-initialize)
+
+(load-theme 'solarized t)
 
 ;; Enable mouse support
 (unless window-system
@@ -36,6 +40,10 @@
  kept-old-versions 2
     version-control t)       ; use versioned backups
 
+(require 'fill-column-indicator)
+(define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
+(global-fci-mode 0)
+
 ;; copying and pasting to main clipboard
 (defun pbcopy ()
   (interactive)
@@ -62,29 +70,14 @@
 (require 'dired-x)
 (setq-default dired-omit-files-p t) ; Buffer-local variable
 
-;;; Color Theme
-(require 'color-theme)
-(if (daemonp)
-    (add-hook 'after-make-frame-functions
-              (lambda (frame)
-                (select-frame frame)
-                (load-theme 'solarized-dark t)))
-  (load-theme 'solarized-dark t))
-(color-theme-initialize)
-(color-theme-solarized-dark)
-
 ;;; Column indication
 ;; make column number mode the default
 (setq column-number-mode t)t
 (setq fci-rule-column 79)
-(require 'fill-column-indicator)
 
 ;;; I hate tabs.
 (setq-default indent-tabs-mode nil)
 
-;;; Use magit!
-(require 'magit)
-(global-set-key (kbd "C-c g") 'magit-status)
 
 (when (load "flymake" t)
   (defun flymake-pyflakes-init ()
@@ -102,11 +95,36 @@
 
   (global-set-key (kbd "M-n") 'flymake-goto-next-error)
   (global-set-key (kbd "M-p") 'flymake-goto-prev-error)
+  (require 'flymake-cursor)
   )
 
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(dired-listing-switches "-alh")
+ '(dired-omit-files "^#\\|^\\.$\\$")
+ '(fci-rule-color "yellow")
+ '(fci-rule-column 79)
+ '(flymake-allowed-file-name-masks
+   (quote
+    ((".+\\.go$" goflymake-init nil nil)
+     ("\\.py\\'" flymake-pyflakes-init nil nil)
+     ("\\.\\(?:c\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'" flymake-simple-make-init nil nil)
+     ("\\.cs\\'" flymake-simple-make-init nil nil)
+     ("\\.p[ml]\\'" flymake-perl-init nil nil)
+     ("\\.php[345]?\\'" flymake-php-init nil nil)
+     ("\\.h\\'" flymake-master-make-header-init flymake-master-cleanup nil)
+     ("[0-9]+\\.tex\\'" flymake-master-tex-init flymake-master-cleanup nil)
+     ("\\.tex\\'" flymake-simple-tex-init nil nil)
+     ("\\.idl\\'" flymake-simple-make-init nil nil))))
+ '(global-fci-mode nil)
+ '(help-at-pt-display-when-idle (quote (flymake-overlay)) nil (help-at-pt))
  '(help-at-pt-timer-delay 0.0)
-      '(help-at-pt-display-when-idle '(flymake-overlay)))
+ '(help-at-pt-timer-display 0.9)
+ '(js-indent-level 2)
+ '(require-final-newline t))
 (add-hook 'find-file-hook 'flymake-find-file-hook)
 
 ;;; Electric Pairs
@@ -132,36 +150,14 @@
 (setenv "PATH" (concat (getenv "PATH") ":/sw/bin"))
 
 (setq exec-path (append exec-path '("/sw/bin")))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(dired-listing-switches "-alh")
- '(dired-omit-files "^#\\|^\\.$\\$")
- '(flymake-allowed-file-name-masks
-   (quote
-    ((".+\\.go$" goflymake-init nil nil)
-     ("\\.py\\'" flymake-pyflakes-init nil nil)
-     ("\\.\\(?:c\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'" flymake-simple-make-init nil nil)
-     ("\\.cs\\'" flymake-simple-make-init nil nil)
-     ("\\.p[ml]\\'" flymake-perl-init nil nil)
-     ("\\.php[345]?\\'" flymake-php-init nil nil)
-     ("\\.h\\'" flymake-master-make-header-init flymake-master-cleanup nil)
-     ("[0-9]+\\.tex\\'" flymake-master-tex-init flymake-master-cleanup nil)
-     ("\\.tex\\'" flymake-simple-tex-init nil nil)
-     ("\\.idl\\'" flymake-simple-make-init nil nil))))
- '(help-at-pt-display-when-idle (quote (flymake-overlay)) nil (help-at-pt))
- '(help-at-pt-timer-display 0.9)
- '(js-indent-level 2)
- '(require-final-newline t))
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(flymake-errline ((((class color)) (:background "red"))))
+ '(flymake-errline ((t (:background "yellow" :foreground "black" :weight bold))))
  '(flymake-warnline ((((class color)) (:background "yellow")))))
 
 ;;; Golang stuff
@@ -190,3 +186,5 @@
     (server-start))
 (put 'narrow-to-region 'disabled nil)
 
+
+(load-file "rename.el")

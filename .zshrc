@@ -1,6 +1,5 @@
 # Path to your oh-my-zsh installation.
-export ZSH=/Users/spencer/.oh-my-zsh
-. `brew --prefix`/etc/profile.d/z.sh
+# export ZSH=/home/spencer/.oh-my-zsh
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
@@ -45,7 +44,7 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git colored-man colorize vagrant virtualenv virtualenvwrapper pip python brew osx zsh-syntax-highlighting)
+plugins=(git colored-man colorize vagrant virtualenv virtualenvwrapper pip python zsh-syntax-highlighting)
 
 # User configuration
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
@@ -53,8 +52,6 @@ export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH=$PATH:/usr/local/opt/go/libexec/bin:$GOPATH/bin
 
 # export MANPATH="/usr/local/man:$MANPATH"
-
-source $ZSH/oh-my-zsh.sh
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -83,14 +80,8 @@ source $ZSH/oh-my-zsh.sh
 alias ec='emacsclient -c'
 
 # Go:
-export GOPATH=/Users/spencer/go
+export GOPATH=/home/spencer/go
 # Add go binaries:
 export PATH=$PATH:/usr/local/opt/go/libexec/bin:$GOPATH/bin
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
-
-# spark administration settings
-mkdir -p ~/.spark
-export SPARK_STATEFILES=~/.spark
-export SPARK_SSH_KEY=~/.ssh/aws/Devspencer.pem
-export SPARK_KEYPAIR=Dev/spencer
