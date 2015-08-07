@@ -124,7 +124,8 @@
  '(help-at-pt-timer-delay 0.0)
  '(help-at-pt-timer-display 0.9)
  '(js-indent-level 2)
- '(require-final-newline t))
+ '(require-final-newline t)
+ '(terraform-indent-level 2))
 (add-hook 'find-file-hook 'flymake-find-file-hook)
 
 ;;; Electric Pairs
@@ -186,5 +187,10 @@
     (server-start))
 (put 'narrow-to-region 'disabled nil)
 
+;; protobuf should have 2-space indentation
+(defconst my-protobuf-style
+  '((c-basic-offset . 2)
+    (indent-tabs-mode . t)))
 
-(load-file "rename.el")
+(add-hook 'protobuf-mode-hook
+          (lambda () (c-add-style "my-style" my-protobuf-style t)))
