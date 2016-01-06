@@ -4,6 +4,10 @@
   (require 'use-package)
   (require 'bind-key)
   (require 'package)
+  (setq package-archives 
+        '(("melpa" . "http://melpa.milkbox.net/packages/")
+          ("elpa" . "http://elpa.gnu.org/packages/")
+          ("marmalade" . "http://marmalade-repo.org/packages/")))
   (package-initialize)
 )
 
@@ -57,7 +61,6 @@
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
-
 (setq
  backup-by-copying t      ; don't clobber symlinks
  delete-old-versions t
@@ -68,37 +71,36 @@
 ;;; No sleeping!
 (global-unset-key (kbd "C-z"))
 
-;;; Hide ~ files in directories
-(require 'dired-x)
-(setq-default dired-omit-files-p t)
+(use-package dired-x
+  :config
+  ;; Hide ~ files in directories
+  (setq-default dired-omit-files-p t)
+  ;; Use human-readable file sizes in dirs
+  (setq dired-listing-switches "-alh")
+  ;; Omit files starting with # or ending with $.
+  (setq dired-omit-files "^#\\|^\\.$\\$")
+)
 
 ;;; Column indication
 ;; make column number mode the default
 (setq column-number-mode t)t
 
-;;; I hate tabs.
+;;; Formatting
+;; Avoid using tabs
 (setq-default indent-tabs-mode nil)
+;; Fill to 79 columns
+(setq fill-column 79)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#657b83"])
  '(asm-comment-char 47)
- '(compilation-message-face (quote default))
  '(cua-global-mark-cursor-color "#2aa198")
  '(cua-normal-cursor-color "#839496")
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
- '(custom-safe-themes
-   (quote
-    ("d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "8db4b03b9ae654d4a57804286eb3e332725c84d7cdab38463cb6b97d5762ad26" default)))
- '(dired-listing-switches "-alh")
- '(dired-omit-files "^#\\|^\\.$\\$")
- '(fci-rule-color "#073642")
- '(fill-column 79)
  '(flycheck-eslintrc (substitute-in-file-name "$HOME/.eslintrc"))
  '(frame-background-mode (quote dark))
  '(help-at-pt-display-when-idle (quote (flymake-overlay)) nil (help-at-pt))
@@ -127,10 +129,6 @@
  '(hl-fg-colors
    (quote
     ("#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36")))
- '(js-indent-level 2)
- '(js2-basic-offset 2)
- '(js2-global-externs (quote ("require")))
- '(js2-highlight-level 3)
  '(magit-diff-use-overlays nil)
  '(nrepl-message-colors
    (quote
@@ -222,8 +220,6 @@
     (define-key (current-local-map) "\C-c\C-c" 'compile))
   (add-hook 'go-mode-hook 'go-mode-settings)
 
-  ;; C-c C-c for compilation + testing
-
   ;; Use tabs of width 4
   (setq tab-width 4)
 
@@ -240,8 +236,7 @@
 (use-package web-mode
   :mode ("\\.html\\'" "\\.mustache\\'")
   :ensure t
-  :config
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
+  :bind ("C-c /" . web-mode-element-close)
 )
 
 ;; JS2 mode
@@ -249,7 +244,12 @@
   :mode "\\.js$"
   :ensure t
   :config
-  (flycheck-add-mode 'javascript-eslint 'js2-mode))
+  ;; Two-space indentation.
+  (setq js2-basic-offset 2)
+  ;; Allow usage of 'require' as a global variable.
+  (setq js2-global-externs '("require"))
+  ;; Highlight ECMA builtin functions
+  (setq js2-highlight-level 3))
 
 ;; Use nasm-mode because it provides better x86 formatting
 (use-package nasm-mode
