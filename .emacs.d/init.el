@@ -1,13 +1,17 @@
-(require 'cask "/usr/local/Cellar/cask/0.7.2/cask.el")
-(cask-initialize)
-(require 'pallet)
-(pallet-mode t)
-
 (require 'windmove)
 (global-set-key (kbd "s-J")  'windmove-left)
 (global-set-key (kbd "s-L") 'windmove-right)
 (global-set-key (kbd "s-I")    'windmove-up)
 (global-set-key (kbd "s-K")  'windmove-down)
+
+(require 'package)
+(add-to-list
+ 'package-archives
+ '("melpa" . "http://melpa.org/packages/")
+ t)
+(package-initialize)
+
+(load-theme 'solarized t)
 
 ;; Enable mouse support
 (unless window-system
@@ -36,6 +40,10 @@
  kept-old-versions 2
     version-control t)       ; use versioned backups
 
+(require 'fill-column-indicator)
+(define-globalized-minor-mode global-fci-mode fci-mode (lambda () (fci-mode 1)))
+(global-fci-mode 0)
+
 ;; copying and pasting to main clipboard
 (defun pbcopy ()
   (interactive)
@@ -62,34 +70,18 @@
 (require 'dired-x)
 (setq-default dired-omit-files-p t) ; Buffer-local variable
 
-;;; Color Theme
-(require 'color-theme)
-(if (daemonp)
-    (add-hook 'after-make-frame-functions
-              (lambda (frame)
-                (select-frame frame)
-                (load-theme 'solarized-dark t)))
-  (load-theme 'solarized-dark t))
-(color-theme-initialize)
-(color-theme-solarized-dark)
-
 ;;; Column indication
 ;; make column number mode the default
 (setq column-number-mode t)t
 (setq fci-rule-column 79)
-(require 'fill-column-indicator)
 
 ;;; I hate tabs.
 (setq-default indent-tabs-mode nil)
 
-;;; Use magit!
-(require 'magit)
-(global-set-key (kbd "C-c g") 'magit-status)
 
 ;;; Use flycheck!
 (require 'flycheck)
 (add-hook 'after-init-hook #'global-flycheck-mode)
-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -101,10 +93,23 @@
  '(dired-omit-files "^#\\|^\\.$\\$")
  '(fill-column 79)
  '(flycheck-eslintrc "(substitute-in-file-name \"$HOME/.eslintrc\")")
- '(help-at-pt-display-when-idle (quote (flymake-overlay)) nil (help-at-pt))
- '(help-at-pt-timer-delay 0.0)
- '(help-at-pt-timer-display 0.9)
- '(js-indent-level 2)
+ '(dired-listing-switches "-alh")
+ '(dired-omit-files "^#\\|^\\.$\\$")
+ '(fci-rule-color "yellow")
+ '(fci-rule-column 79)
+ '(flymake-allowed-file-name-masks
+   (quote
+    ((".+\\.go$" goflymake-init nil nil)
+     ("\\.py\\'" flymake-pyflakes-init nil nil)
+     ("\\.\\(?:c\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'" flymake-simple-make-init nil nil)
+     ("\\.cs\\'" flymake-simple-make-init nil nil)
+     ("\\.p[ml]\\'" flymake-perl-init nil nil)
+     ("\\.php[345]?\\'" flymake-php-init nil nil)
+     ("\\.h\\'" flymake-master-make-header-init flymake-master-cleanup nil)
+     ("[0-9]+\\.tex\\'" flymake-master-tex-init flymake-master-cleanup nil)
+     ("\\.tex\\'" flymake-simple-tex-init nil nil)
+     ("\\.idl\\'" flymake-simple-make-init nil nil))))
+ '(global-fci-mode nil)
  '(js2-basic-offset 2)
  '(js2-global-externs (quote ("require")))
  '(js2-highlight-level 3)
@@ -119,6 +124,9 @@
  '(web-mode-code-indent-offset 2)
  '(web-mode-markup-indent-offset 2))
 ;;(add-hook 'find-file-hook 'flymake-find-file-hook)
+ '(require-final-newline t)
+ '(terraform-indent-level 2))
+(add-hook 'find-file-hook 'flymake-find-file-hook)
 
 ;;; Electric Pairs
 (add-hook 'python-mode-hook
@@ -150,7 +158,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(flymake-errline ((((class color)) (:background "red"))))
+ '(flymake-errline ((t (:background "yellow" :foreground "black" :weight bold))))
  '(flymake-warnline ((((class color)) (:background "yellow")))))
 
 ;;; Golang stuff
@@ -198,6 +206,14 @@
 (require 'nasm-mode)
 (add-to-list 'auto-mode-alist '("\\.asm\\'" . nasm-mode))
 (require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
+;; protobuf should have 2-space indentation
+(defconst my-protobuf-style
+  '((c-basic-offset . 2)
+    (indent-tabs-mode . t)))
+
+(add-hook 'protobuf-mode-hook
+          (lambda () (c-add-style "my-style" my-protobuf-style t)))
+
 (provide 'init.el)
 ;;; init.el ends here
 
