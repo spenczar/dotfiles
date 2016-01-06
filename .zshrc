@@ -12,7 +12,7 @@ ZSH_THEME="robbyrussell"
 # much, much faster.
 # DISABLE_UNTRACKED_FILES_DIRTY="true"
 
-plugins=(git colored-man colorize vagrant virtualenv virtualenvwrapper pip python zsh-syntax-highlighting)
+plugins=(git colored-man colorize vagrant virtualenv virtualenvwrapper pip python zsh-syntax-highlighting z)
 
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 
