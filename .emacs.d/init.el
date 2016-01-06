@@ -1,3 +1,9 @@
+;; Initialization
+(eval-when-compile
+  (add-to-list 'load-path "~/.emacs.d/use-package/")
+  (require 'use-package))
+
+;; OS-dependent settings go here
 (if (string-equal system-type "darwin")
     (progn
       (message "Running on OSX")
@@ -29,24 +35,35 @@
       (global-set-key (kbd "S-v") 'pbpaste)
       (global-set-key (kbd "S-x") 'pbcut)
       )
+  (progn
+    ;; On Linux, I use suckless terminal, which maps backspace to C-h;
+    ;; C-M-h is thus what emacs receives when pressing
+    ;; M-backspace. I'd like M-backspace to delete the previous word.
+    (global-set-key (kbd "C-M-h") 'backward-kill-word)
+    )
   )
 
-(require 'windmove)
-(global-set-key (kbd "s-J")  'windmove-left)
-(global-set-key (kbd "s-L") 'windmove-right)
-(global-set-key (kbd "s-I")    'windmove-up)
-(global-set-key (kbd "s-K")  'windmove-down)
+;;; Navigation
+
+(use-package windmove
+  :bind (("s-J" . windmove-left)
+	 ("s-L" . windmove-right)
+	 ("s-I" . windmove-up)
+	 ("s-K" . windmove-down)))
 
 ;; Enable mouse support
 (unless window-system
-  (require 'mouse)
+  (use-package mouse
+    :config
+    (global-set-key [mouse-4] '(lambda ()
+				 (interactive)
+				 (scroll-down 1)))
+    (global-set-key [mouse-5] '(lambda ()
+				 (interactive)
+				 (scroll-up 1)))
+    )
+
   (xterm-mouse-mode t)
-  (global-set-key [mouse-4] '(lambda ()
-                               (interactive)
-                               (scroll-down 1)))
-  (global-set-key [mouse-5] '(lambda ()
-                               (interactive)
-                               (scroll-up 1)))
   (defun track-mouse (e))
   (setq mouse-sel-mode t)
   )
@@ -74,20 +91,9 @@
 ;;; Column indication
 ;; make column number mode the default
 (setq column-number-mode t)t
-(setq fci-rule-column 79)
-(require 'fill-column-indicator)
 
 ;;; I hate tabs.
 (setq-default indent-tabs-mode nil)
-
-;;; Use magit!
-(require 'magit)
-(global-set-key (kbd "C-c g") 'magit-status)
-
-;;; Use flycheck!
-(require 'flycheck)
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -191,6 +197,10 @@
  '(xterm-color-names-bright
    ["#002b36" "#cb4b16" "#586e75" "#657b83" "#839496" "#6c71c4" "#93a1a1" "#fdf6e3"]))
 ;;(add-hook 'find-file-hook 'flymake-find-file-hook)
+
+(use-package flycheck
+  :config
+  (add-hook 'after-init-hook #'global-flycheck-mode))
 
 ;;; Electric Pairs
 (add-hook 'python-mode-hook
