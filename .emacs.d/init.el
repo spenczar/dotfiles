@@ -29,7 +29,6 @@
       (global-set-key (kbd "S-v") 'pbpaste)
       (global-set-key (kbd "S-x") 'pbcut)
       )
-  (message (concat "Running on " system-type))
   )
 
 (require 'windmove)
