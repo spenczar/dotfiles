@@ -1,7 +1,11 @@
 ;; Initialization
 (eval-when-compile
   (add-to-list 'load-path "~/.emacs.d/use-package/")
-  (require 'use-package))
+  (require 'use-package)
+  (require 'bind-key)
+  (require 'package)
+  (package-initialize)
+)
 
 ;; OS-dependent settings go here
 (if (string-equal system-type "darwin")
@@ -44,14 +48,7 @@
   )
 
 ;;; Navigation
-
-(use-package windmove
-  :bind (("s-J" . windmove-left)
-	 ("s-L" . windmove-right)
-	 ("s-I" . windmove-up)
-	 ("s-K" . windmove-down)))
-
-;; Enable mouse support
+;; Enable mouse support if in a terminal
 (unless window-system
   (use-package mouse
     :config
@@ -61,12 +58,9 @@
     (global-set-key [mouse-5] '(lambda ()
 				 (interactive)
 				 (scroll-up 1)))
-    )
-
-  (xterm-mouse-mode t)
-  (defun track-mouse (e))
-  (setq mouse-sel-mode t)
-  )
+    (xterm-mouse-mode t)
+    (defun track-mouse (e))
+    (setq mouse-sel-mode t)))
 
 ;; Manage backup files
 (setq backup-directory-alist
@@ -79,14 +73,14 @@
  delete-old-versions t
  kept-new-versions 6
  kept-old-versions 2
-    version-control t)       ; use versioned backups
+ version-control t)       ; use versioned backups
 
 ;;; No sleeping!
 (global-unset-key (kbd "C-z"))
 
 ;;; Hide ~ files in directories
 (require 'dired-x)
-(setq-default dired-omit-files-p t) ; Buffer-local variable
+(setq-default dired-omit-files-p t)
 
 ;;; Column indication
 ;; make column number mode the default
@@ -202,20 +196,6 @@
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode))
 
-;;; Electric Pairs
-(add-hook 'python-mode-hook
-     (lambda ()
-      (define-key python-mode-map "\"" 'electric-pair)
-      (define-key python-mode-map "\'" 'electric-pair)
-      (define-key python-mode-map "(" 'electric-pair)
-      (define-key python-mode-map "[" 'electric-pair)
-      (define-key python-mode-map "{" 'electric-pair)))
-(defun electric-pair ()
-  "Insert character pair without sournding spaces"
-  (interactive)
-  (let (parens-require-spaces)
-    (insert-pair)))
-
 ;; Path configuration from shell
 (defun set-exec-path-from-shell-PATH ()
   (let ((path-from-shell (shell-command-to-string "$SHELL -i -c 'echo $PATH'")))
@@ -236,50 +216,61 @@
  '(flymake-warnline ((((class color)) (:background "yellow")))))
 
 ;;; Golang stuff
-(defun go-mode-setup ()
+
+(use-package go-mode
+  :mode "\\.go\\'"
+  :ensure t
+  :config
   ;; gofmt all go code - use goimports though
+  (message "doing the config dance for go!")
   (setq gofmt-command "goimports")
   (add-hook 'before-save-hook 'gofmt-before-save)
-  ;; Bind M-. to jump to definition of go code at point
-  (local-set-key (kbd "M-.") 'godef-jump)
+
+  (defun go-mode-settings ()
+    (local-set-key (kbd "M-.") 'godef-jump)
+    (setq compile-command "go vet && go test -v && go build")
+    (define-key (current-local-map) "\C-c\C-c" 'compile))
+  (add-hook 'go-mode-hook 'go-mode-settings)
+
   ;; C-c C-c for compilation + testing
-  (setq compile-command "go vet && go test -v && go build && godep save ./...")
-  (define-key (current-local-map) "\C-c\C-c" 'compile)
+
   ;; Use tabs of width 4
   (setq tab-width 4)
-  ;; load go-oracle
-  (load-file (concat (getenv "GOPATH") "/src/golang.org/x/tools/cmd/oracle/oracle.el"))
-  )
 
-;; Use flymake for go!
-(add-to-list 'load-path (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))
-(setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin")))))
+  ;; Use flymake for go!
+  (use-package go-flycheck
+    :init
+    (add-to-list 'load-path (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))
+    (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin"))))))
+)
 
-(require 'go-flycheck)
-(add-hook 'go-mode-hook 'go-mode-setup)
+
 (require 'server)
 (unless (server-running-p)
     (server-start))
 (put 'narrow-to-region 'disabled nil)
 
 ;; Web-mode
-(require 'web-mode)
-(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(use-package web-mode
+  :mode ("\\.html\\'" "\\.mustache\\'")
+  :ensure t
+  :config
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
+)
 
 ;; JS2 mode
-(require 'js2-mode)
-(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
-
-;; use eslint with web-mode for jsx files
-(flycheck-add-mode 'javascript-eslint 'web-mode)
-(flycheck-add-mode 'javascript-eslint 'js2-mode)
+(use-package js2-mode
+  :mode "\\.js$"
+  :ensure t
+  :config
+  (flycheck-add-mode 'javascript-eslint 'js2-mode))
 
 ;; Use nasm-mode because it provides better x86 formatting
-(require 'nasm-mode)
-(add-to-list 'auto-mode-alist '("\\.asm\\'" . nasm-mode))
-(require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
+(use-package nasm-mode
+  :mode "\\.asm"
+  :ensure t)
+
+;;(require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
 (provide 'init.el)
 ;;; init.el ends here
 
