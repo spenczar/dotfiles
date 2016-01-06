@@ -86,28 +86,39 @@
 (require 'magit)
 (global-set-key (kbd "C-c g") 'magit-status)
 
-(when (load "flymake" t)
-  (defun flymake-pyflakes-init ()
-    (let* ((temp-file (flymake-init-create-temp-buffer-copy
-                       'flymake-create-temp-inplace))
-           (local-file (file-relative-name
-                        temp-file
-                        (file-name-directory buffer-file-name))))
-      (list "/usr/local/bin/pyflakes" (list local-file))))
-  (add-to-list 'flymake-allowed-file-name-masks
-               '("\\.py\\'" flymake-pyflakes-init))
-  (custom-set-faces
-   '(flymake-errline ((((class color)) (:background "red"))))
-   '(flymake-warnline ((((class color)) (:background "yellow")))))
+;;; Use flycheck!
+(require 'flycheck)
+(add-hook 'after-init-hook #'global-flycheck-mode)
 
-  (global-set-key (kbd "M-n") 'flymake-goto-next-error)
-  (global-set-key (kbd "M-p") 'flymake-goto-prev-error)
-  )
 
 (custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(asm-comment-char 47)
+ '(dired-listing-switches "-alh")
+ '(dired-omit-files "^#\\|^\\.$\\$")
+ '(fill-column 79)
+ '(flycheck-eslintrc "(substitute-in-file-name \"$HOME/.eslintrc\")")
+ '(help-at-pt-display-when-idle (quote (flymake-overlay)) nil (help-at-pt))
  '(help-at-pt-timer-delay 0.0)
-      '(help-at-pt-display-when-idle '(flymake-overlay)))
-(add-hook 'find-file-hook 'flymake-find-file-hook)
+ '(help-at-pt-timer-display 0.9)
+ '(js-indent-level 2)
+ '(js2-basic-offset 2)
+ '(js2-global-externs (quote ("require")))
+ '(js2-highlight-level 3)
+ '(package-archives
+   (quote
+    (("melpa" . "http://melpa.milkbox.net/packages/")
+     ("elpa" . "http://elpa.gnu.org/packages/"))))
+ '(puppet-include-indent 2)
+ '(require-final-newline t)
+ '(terraform-indent-level 2)
+ '(tidy-shell-command "/usr/local/bin/tidy --tidy-mark false -indent")
+ '(web-mode-code-indent-offset 2)
+ '(web-mode-markup-indent-offset 2))
+;;(add-hook 'find-file-hook 'flymake-find-file-hook)
 
 ;;; Electric Pairs
 (add-hook 'python-mode-hook
@@ -132,29 +143,7 @@
 (setenv "PATH" (concat (getenv "PATH") ":/sw/bin"))
 
 (setq exec-path (append exec-path '("/sw/bin")))
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(dired-listing-switches "-alh")
- '(dired-omit-files "^#\\|^\\.$\\$")
- '(flymake-allowed-file-name-masks
-   (quote
-    ((".+\\.go$" goflymake-init nil nil)
-     ("\\.py\\'" flymake-pyflakes-init nil nil)
-     ("\\.\\(?:c\\(?:pp\\|xx\\|\\+\\+\\)?\\|CC\\)\\'" flymake-simple-make-init nil nil)
-     ("\\.cs\\'" flymake-simple-make-init nil nil)
-     ("\\.p[ml]\\'" flymake-perl-init nil nil)
-     ("\\.php[345]?\\'" flymake-php-init nil nil)
-     ("\\.h\\'" flymake-master-make-header-init flymake-master-cleanup nil)
-     ("[0-9]+\\.tex\\'" flymake-master-tex-init flymake-master-cleanup nil)
-     ("\\.tex\\'" flymake-simple-tex-init nil nil)
-     ("\\.idl\\'" flymake-simple-make-init nil nil))))
- '(help-at-pt-display-when-idle (quote (flymake-overlay)) nil (help-at-pt))
- '(help-at-pt-timer-display 0.9)
- '(js-indent-level 2)
- '(require-final-newline t))
+
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -183,10 +172,32 @@
 ;; Use flymake for go!
 (add-to-list 'load-path (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))
 (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin")))))
-(require 'go-flymake)
+
+(require 'go-flycheck)
 (add-hook 'go-mode-hook 'go-mode-setup)
 (require 'server)
 (unless (server-running-p)
     (server-start))
 (put 'narrow-to-region 'disabled nil)
+
+;; Web-mode
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+
+;; JS2 mode
+(require 'js2-mode)
+(add-to-list 'auto-mode-alist '("\\.js$" . js2-mode))
+
+;; use eslint with web-mode for jsx files
+(flycheck-add-mode 'javascript-eslint 'web-mode)
+(flycheck-add-mode 'javascript-eslint 'js2-mode)
+
+;; Use nasm-mode because it provides better x86 formatting
+(require 'nasm-mode)
+(add-to-list 'auto-mode-alist '("\\.asm\\'" . nasm-mode))
+(require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
+(provide 'init.el)
+;;; init.el ends here
 

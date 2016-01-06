@@ -65,6 +65,7 @@ source $ZSH/oh-my-zsh.sh
 # else
 #   export EDITOR='mvim'
 # fi
+export EDITOR='emacs -nw'
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -81,11 +82,14 @@ source $ZSH/oh-my-zsh.sh
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias ec='emacsclient -c'
+alias land="arc land --squash --delete-remote"
 
 # Go:
 export GOPATH=/Users/spencer/go
+export GOROOT=/usr/local/go
 # Add go binaries:
 export PATH=$PATH:/usr/local/opt/go/libexec/bin:$GOPATH/bin
+export PATH="$PATH:/usr/local/go/bin"
 
 export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
 
