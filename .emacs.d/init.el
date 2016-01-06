@@ -234,10 +234,6 @@
     (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin"))))))
 )
 
-
-(require 'server)
-(unless (server-running-p)
-    (server-start))
 (put 'narrow-to-region 'disabled nil)
 
 ;; Web-mode
@@ -267,4 +263,3 @@
 ;;(require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
 (provide 'init.el)
 ;;; init.el ends here
-
