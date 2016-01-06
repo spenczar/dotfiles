@@ -10,16 +10,6 @@
 ;; OS-dependent settings go here
 (if (string-equal system-type "darwin")
     (progn
-      (message "Running on OSX")
-      (require 'cask "/usr/local/Cellar/cask/0.7.2/cask.el")
-      (cask-initialize)
-      (require 'pallet)
-      (pallet-mode t)
-
-      ;; Color Theme
-      (require 'color-theme)
-      (load-theme 'solarized t)
-
       ;; copying and pasting to main clipboard
       (defun pbcopy ()
 	(interactive)
@@ -269,6 +259,10 @@
 (use-package nasm-mode
   :mode "\\.asm"
   :ensure t)
+
+;; Color Theme
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs/emacs-color-theme-solarized")
+(load-theme 'solarized t)
 
 ;;(require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
 (provide 'init.el)
