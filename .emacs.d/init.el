@@ -90,6 +90,8 @@
 (setq-default indent-tabs-mode nil)
 ;; Fill to 79 columns
 (setq fill-column 79)
+;; Delete trailing whitespace before save
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.

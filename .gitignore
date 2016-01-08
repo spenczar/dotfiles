@@ -1,3 +1,6 @@
+# Compiled emacs files
+*.elc
+
 # Folder view configuration files
 .DS_Store
 Desktop.ini
