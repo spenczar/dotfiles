@@ -219,19 +219,14 @@
   (defun go-mode-settings ()
     (local-set-key (kbd "M-.") 'godef-jump)
     (setq compile-command "go vet && go test -v && go build")
+    (setq tab-width 2)
     (define-key (current-local-map) "\C-c\C-c" 'compile))
   (add-hook 'go-mode-hook 'go-mode-settings)
 
-  ;; C-c C-c for compilation + testing
-
-  ;; Use tabs of width 4
-  (setq tab-width 4)
-
   ;; Use flymake for go!
-  (use-package go-flycheck
-    :init
-    (add-to-list 'load-path (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))
-    (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin"))))))
+  (add-to-list 'load-path (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))
+  (require 'go-flycheck)
+  (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin")))))
 )
 
 (put 'narrow-to-region 'disabled nil)
@@ -250,6 +245,11 @@
   :ensure t
   :config
   (flycheck-add-mode 'javascript-eslint 'js2-mode))
+
+;; Typescript mode
+(use-package typescript-mode
+  :mode "\\.ts$"
+  :ensure t)
 
 ;; Use nasm-mode because it provides better x86 formatting
 (use-package nasm-mode
