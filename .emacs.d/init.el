@@ -196,6 +196,7 @@
 ;;(add-hook 'find-file-hook 'flymake-find-file-hook)
 
 (use-package flycheck
+  :ensure t
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode))
 
@@ -239,10 +240,11 @@
   ;; Use tabs of width 4
   (setq tab-width 4)
 
-  ;; Use flymake for go!
-  (add-to-list 'load-path (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))
-  (require 'go-flycheck)
+  ;; Add $GOPATH/bin to exec-path
   (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin")))))
+  ;; Use flymake for go!
+  (use-package "go-flycheck"
+    :load-path (lambda() (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake")))
 )
 
 (put 'narrow-to-region 'disabled nil)
