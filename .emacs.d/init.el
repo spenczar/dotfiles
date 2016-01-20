@@ -108,7 +108,7 @@
 ;; Delete trailing whitespace before save
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 ;; Files should have a trailing newline.
-(require-final-newline t)
+(setq require-final-newline t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
