@@ -7,7 +7,6 @@
   (setq package-archives
         '(("melpa" . "http://melpa.milkbox.net/packages/")
           ("elpa" . "http://elpa.gnu.org/packages/")
-          ;("tromey" . "http://tromey.com/elpa/")
           ("marmalade" . "http://marmalade-repo.org/packages/")))
   (package-initialize t)
 )
@@ -73,8 +72,10 @@
 ;; Manage backup files
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
+
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
+
 (setq
  backup-by-copying t      ; don't clobber symlinks
  delete-old-versions t
@@ -96,7 +97,7 @@
 
 ;;; Column indication
 ;; make column number mode the default
-(setq column-number-mode t)t
+(setq column-number-mode t)
 
 ;;; Formatting
 ;; Avoid using tabs
@@ -295,6 +296,7 @@
   (turn-on-eldoc-mode))
 
 (add-hook 'clojure-mode-hook 'lisp-settings)
+(add-hook 'cider-mode-hook 'lisp-settings)
 (add-hook 'eval-expression-minibuffer-setup-hook 'lisp-settings)
 (add-hook 'emacs-lisp-mode-hook 'lisp-settings)
 (add-hook 'ielm-mode-hook 'lisp-settings)
@@ -319,8 +321,6 @@
   (use-package cider
     :ensure t
     :config
-    (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
-    (add-hook 'cider-mode-hook 'paredit-mode)
     (setq
      cider-repl-pop-to-buffer-on-connect t
      cider-show-error-buffer t

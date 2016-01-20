@@ -28,7 +28,7 @@ else
     export EDITOR='nano'
 fi
 
-# Arcanist 
+# Arcanist
 alias land="arc land --squash --delete-remote"
 
 # Go:
