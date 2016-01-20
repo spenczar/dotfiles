@@ -4,14 +4,16 @@
   (require 'use-package)
   (require 'bind-key)
   (require 'package)
-  (setq package-archives 
+  (setq package-archives
         '(("melpa" . "http://melpa.milkbox.net/packages/")
           ("elpa" . "http://elpa.gnu.org/packages/")
+          ;("tromey" . "http://tromey.com/elpa/")
           ("marmalade" . "http://marmalade-repo.org/packages/")))
+  (package-refresh-contents)
   (package-initialize)
 )
 
-;; OS-dependent settings go here
+;;; OS-dependent settings go here
 (if (string-equal system-type "darwin")
     (progn
       ;; copying and pasting to main clipboard
@@ -38,6 +40,13 @@
     ;; C-M-h is thus what emacs receives when pressing
     ;; M-backspace. I'd like M-backspace to delete the previous word.
     (global-set-key (kbd "C-M-h") 'backward-kill-word)
+    ;; Lets give a shot towards clipboard integration
+    (setq
+     x-select-enable-clipboard t
+     x-select-enable-primary t
+     save-interprogram-paste-before-kill t
+     )
+
     )
   )
 
@@ -56,6 +65,12 @@
     (defun track-mouse (e))
     (setq mouse-sel-mode t)))
 
+;; Project navigation
+(use-package projectile
+  :config
+  (projectile-global-mode))
+
+
 ;; Manage backup files
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
@@ -67,7 +82,6 @@
  kept-new-versions 6
  kept-old-versions 2
  version-control t)       ; use versioned backups
-
 ;;; No sleeping!
 (global-unset-key (kbd "C-z"))
 
@@ -258,9 +272,82 @@
   :mode "\\.asm"
   :ensure t)
 
+;; Common settings for lisp languages.
+(defun lisp-settings ()
+  (show-paren-mode 1)
+
+  (use-package rainbow-delimiters
+    :ensure t
+    :config
+    (rainbow-delimiters-mode))
+
+  (use-package paredit
+    :ensure t
+    :config
+    (enable-paredit-mode))
+
+  (turn-on-eldoc-mode))
+
+(add-hook 'clojure-mode-hook 'lisp-settings)
+(add-hook 'eval-expression-minibuffer-setup-hook 'lisp-settings)
+(add-hook 'emacs-lisp-mode-hook 'lisp-settings)
+(add-hook 'ielm-mode-hook 'lisp-settings)
+(add-hook 'lisp-mode-hook 'lisp-settings)
+(add-hook 'lisp-interaction-mode-hook 'lisp-settings)
+(add-hook 'scheme-mode-hook 'lisp-settings)
+
+;;; Clojure
+;; Clojure-mode
+(use-package clojure-mode
+  :mode (("\\.clj" . clojure-mode)
+         ("\\.boot$" . clojure-mode)
+         ("\\.cljs.*$" . clojure-mode)
+         ("lein-env" . ruby-mode))
+  :ensure t
+  :config
+  ;; Extra font highlighting for clojure
+  (use-package clojure-mode-extra-font-locking
+    :ensure t)
+
+  ;; Integration with the clojure repl
+  (use-package cider
+    :ensure t
+    :config
+    (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+    (add-hook 'cider-mode-hook 'paredit-mode)
+    (setq
+     cider-repl-pop-to-buffer-on-connect t
+     cider-show-error-buffer t
+     cider-auto-select-error-buffer t
+     cider-repl-history-file "~/.cider-history"
+     cider-repl-wrap-history t
+     ))
+
+  ;; Useful for working with camel-case tokens, like names of Java classes
+  (add-hook 'clojure-mode-hook 'subword-mode)
+
+  (add-hook 'clojure-mode-hook
+            (lambda ()
+              (setq inferior-lisp-program "lein repl")
+              (font-lock-add-keywords
+               nil
+               '(("\\(facts?\\)"
+                  (1 font-lock-keyword-face))
+                 ("(\\(background?\\)"
+                  (1 font-lock-keyword face))))
+              (define-clojure-indent (fact 1))
+              (define-clojure-indent (facts 1)))))
+
+;; edit html tags like sexps
+(use-package tagedit)
+
+;;; Visual themes (these belong last)
 ;; Color Theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs/emacs-color-theme-solarized")
 (load-theme 'solarized t)
+
+;; no bell
+(setq ring-bell-function 'ignore)
 
 ;;(require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
 (provide 'init.el)
