@@ -65,6 +65,7 @@
 
 ;; Project navigation
 (use-package projectile
+  :ensure t
   :config
   (projectile-global-mode))
 
@@ -106,6 +107,8 @@
 (setq fill-column 79)
 ;; Delete trailing whitespace before save
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
+;; Files should have a trailing newline.
+(require-final-newline t)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -161,32 +164,7 @@
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
  '(term-default-bg-color "#002b36")
  '(term-default-fg-color "#839496")
- '(terraform-indent-level 2)
  '(tidy-shell-command "/usr/local/bin/tidy --tidy-mark false -indent")
- '(vc-annotate-background nil)
- '(vc-annotate-color-map
-   (quote
-    ((20 . "#dc322f")
-     (40 . "#ff7f00")
-     (60 . "#ffbf00")
-     (80 . "#b58900")
-     (100 . "#ffff00")
-     (120 . "#ffff00")
-     (140 . "#ffff00")
-     (160 . "#ffff00")
-     (180 . "#859900")
-     (200 . "#aaff55")
-     (220 . "#7fff7f")
-     (240 . "#55ffaa")
-     (260 . "#2affd4")
-     (280 . "#2aa198")
-     (300 . "#00ffff")
-     (320 . "#00ffff")
-     (340 . "#00ffff")
-     (360 . "#268bd2"))))
- '(vc-annotate-very-old-color nil)
- '(web-mode-code-indent-offset 2)
- '(web-mode-markup-indent-offset 2)
  '(weechat-color-list
    (quote
     (unspecified "#002b36" "#073642" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#839496" "#657b83")))
@@ -255,6 +233,9 @@
   :mode ("\\.html\\'" "\\.mustache\\'")
   :ensure t
   :bind ("C-c /" . web-mode-element-close)
+  :config
+  (setq web-mode-code-indent-offset 2
+        web-mode-markup-indent-offset 2)
 )
 
 ;; JS2 mode
@@ -278,6 +259,11 @@
 (use-package nasm-mode
   :mode "\\.asm"
   :ensure t)
+
+(use-package terraform-mode
+  :mode "\\.tf$"
+  :config
+  (setq terraform-indent-level 2))
 
 ;; Common settings for lisp languages.
 (defun lisp-settings ()
@@ -343,9 +329,6 @@
                   (1 font-lock-keyword face))))
               (define-clojure-indent (fact 1))
               (define-clojure-indent (facts 1)))))
-
-;; edit html tags like sexps
-(use-package tagedit)
 
 ;;; Visual themes (these belong last)
 ;; Color Theme
