@@ -9,8 +9,7 @@
           ("elpa" . "http://elpa.gnu.org/packages/")
           ;("tromey" . "http://tromey.com/elpa/")
           ("marmalade" . "http://marmalade-repo.org/packages/")))
-  (package-refresh-contents)
-  (package-initialize)
+  (package-initialize t)
 )
 
 ;;; OS-dependent settings go here
@@ -348,7 +347,7 @@
 
 ;;; Visual themes (these belong last)
 ;; Color Theme
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs/emacs-color-theme-solarized")
+(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
 (load-theme 'solarized t)
 
 ;; no bell
