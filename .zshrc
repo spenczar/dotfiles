@@ -37,5 +37,7 @@ export GOROOT=/usr/local/go
 export PATH=$PATH:/usr/local/opt/go/libexec/bin:$GOPATH/bin
 export PATH="$PATH:/usr/local/go/bin"
 
+# Custom binaries
+export PATH="$PATH:$HOME/bin"
 # RVM
 export PATH="$PATH:$HOME/.rvm/bin"
