@@ -4,10 +4,16 @@
   (require 'use-package)
   (require 'bind-key)
   (require 'package)
+  (setq package-archives
+        '(("melpa" . "http://melpa.milkbox.net/packages/")
+          ("elpa" . "http://elpa.gnu.org/packages/")
+          ;("tromey" . "http://tromey.com/elpa/")
+          ("marmalade" . "http://marmalade-repo.org/packages/")))
+  (package-refresh-contents)
   (package-initialize)
 )
 
-;; OS-dependent settings go here
+;;; OS-dependent settings go here
 (if (string-equal system-type "darwin")
     (progn
       ;; copying and pasting to main clipboard
@@ -34,6 +40,13 @@
     ;; C-M-h is thus what emacs receives when pressing
     ;; M-backspace. I'd like M-backspace to delete the previous word.
     (global-set-key (kbd "C-M-h") 'backward-kill-word)
+    ;; Lets give a shot towards clipboard integration
+    (setq
+     x-select-enable-clipboard t
+     x-select-enable-primary t
+     save-interprogram-paste-before-kill t
+     )
+
     )
   )
 
@@ -52,53 +65,58 @@
     (defun track-mouse (e))
     (setq mouse-sel-mode t)))
 
+;; Project navigation
+(use-package projectile
+  :config
+  (projectile-global-mode))
+
+
 ;; Manage backup files
 (setq backup-directory-alist
       `((".*" . ,temporary-file-directory)))
 (setq auto-save-file-name-transforms
       `((".*" ,temporary-file-directory t)))
-
 (setq
  backup-by-copying t      ; don't clobber symlinks
  delete-old-versions t
  kept-new-versions 6
  kept-old-versions 2
  version-control t)       ; use versioned backups
-
 ;;; No sleeping!
 (global-unset-key (kbd "C-z"))
 
-;;; Hide ~ files in directories
-(require 'dired-x)
-(setq-default dired-omit-files-p t)
+(use-package dired-x
+  :config
+  ;; Hide ~ files in directories
+  (setq-default dired-omit-files-p t)
+  ;; Use human-readable file sizes in dirs
+  (setq dired-listing-switches "-alh")
+  ;; Omit files starting with # or ending with $.
+  (setq dired-omit-files "^#\\|^\\.$\\$")
+)
 
 ;;; Column indication
 ;; make column number mode the default
 (setq column-number-mode t)t
 
-;;; I hate tabs.
+;;; Formatting
+;; Avoid using tabs
 (setq-default indent-tabs-mode nil)
+;; Fill to 79 columns
+(setq fill-column 79)
+;; Delete trailing whitespace before save
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ansi-color-names-vector
-   ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#657b83"])
  '(asm-comment-char 47)
- '(compilation-message-face (quote default))
  '(cua-global-mark-cursor-color "#2aa198")
  '(cua-normal-cursor-color "#839496")
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
- '(custom-safe-themes
-   (quote
-    ("d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "8db4b03b9ae654d4a57804286eb3e332725c84d7cdab38463cb6b97d5762ad26" default)))
- '(dired-listing-switches "-alh")
- '(dired-omit-files "^#\\|^\\.$\\$")
- '(fci-rule-color "#073642")
- '(fill-column 79)
  '(flycheck-eslintrc (substitute-in-file-name "$HOME/.eslintrc"))
  '(frame-background-mode (quote dark))
  '(help-at-pt-display-when-idle (quote (flymake-overlay)) nil (help-at-pt))
@@ -127,10 +145,6 @@
  '(hl-fg-colors
    (quote
     ("#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36")))
- '(js-indent-level 2)
- '(js2-basic-offset 2)
- '(js2-global-externs (quote ("require")))
- '(js2-highlight-level 3)
  '(magit-diff-use-overlays nil)
  '(nrepl-message-colors
    (quote
@@ -223,6 +237,9 @@
     (define-key (current-local-map) "\C-c\C-c" 'compile))
   (add-hook 'go-mode-hook 'go-mode-settings)
 
+  ;; Use tabs of width 4
+  (setq tab-width 4)
+
   ;; Use flymake for go!
   (add-to-list 'load-path (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake"))
   (require 'go-flycheck)
@@ -235,8 +252,7 @@
 (use-package web-mode
   :mode ("\\.html\\'" "\\.mustache\\'")
   :ensure t
-  :config
-  (flycheck-add-mode 'javascript-eslint 'web-mode)
+  :bind ("C-c /" . web-mode-element-close)
 )
 
 ;; JS2 mode
@@ -244,7 +260,12 @@
   :mode "\\.js$"
   :ensure t
   :config
-  (flycheck-add-mode 'javascript-eslint 'js2-mode))
+  ;; Two-space indentation.
+  (setq js2-basic-offset 2)
+  ;; Allow usage of 'require' as a global variable.
+  (setq js2-global-externs '("require"))
+  ;; Highlight ECMA builtin functions
+  (setq js2-highlight-level 3))
 
 ;; Typescript mode
 (use-package typescript-mode
@@ -256,9 +277,82 @@
   :mode "\\.asm"
   :ensure t)
 
+;; Common settings for lisp languages.
+(defun lisp-settings ()
+  (show-paren-mode 1)
+
+  (use-package rainbow-delimiters
+    :ensure t
+    :config
+    (rainbow-delimiters-mode))
+
+  (use-package paredit
+    :ensure t
+    :config
+    (enable-paredit-mode))
+
+  (turn-on-eldoc-mode))
+
+(add-hook 'clojure-mode-hook 'lisp-settings)
+(add-hook 'eval-expression-minibuffer-setup-hook 'lisp-settings)
+(add-hook 'emacs-lisp-mode-hook 'lisp-settings)
+(add-hook 'ielm-mode-hook 'lisp-settings)
+(add-hook 'lisp-mode-hook 'lisp-settings)
+(add-hook 'lisp-interaction-mode-hook 'lisp-settings)
+(add-hook 'scheme-mode-hook 'lisp-settings)
+
+;;; Clojure
+;; Clojure-mode
+(use-package clojure-mode
+  :mode (("\\.clj" . clojure-mode)
+         ("\\.boot$" . clojure-mode)
+         ("\\.cljs.*$" . clojure-mode)
+         ("lein-env" . ruby-mode))
+  :ensure t
+  :config
+  ;; Extra font highlighting for clojure
+  (use-package clojure-mode-extra-font-locking
+    :ensure t)
+
+  ;; Integration with the clojure repl
+  (use-package cider
+    :ensure t
+    :config
+    (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+    (add-hook 'cider-mode-hook 'paredit-mode)
+    (setq
+     cider-repl-pop-to-buffer-on-connect t
+     cider-show-error-buffer t
+     cider-auto-select-error-buffer t
+     cider-repl-history-file "~/.cider-history"
+     cider-repl-wrap-history t
+     ))
+
+  ;; Useful for working with camel-case tokens, like names of Java classes
+  (add-hook 'clojure-mode-hook 'subword-mode)
+
+  (add-hook 'clojure-mode-hook
+            (lambda ()
+              (setq inferior-lisp-program "lein repl")
+              (font-lock-add-keywords
+               nil
+               '(("\\(facts?\\)"
+                  (1 font-lock-keyword-face))
+                 ("(\\(background?\\)"
+                  (1 font-lock-keyword face))))
+              (define-clojure-indent (fact 1))
+              (define-clojure-indent (facts 1)))))
+
+;; edit html tags like sexps
+(use-package tagedit)
+
+;;; Visual themes (these belong last)
 ;; Color Theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs/emacs-color-theme-solarized")
 (load-theme 'solarized t)
+
+;; no bell
+(setq ring-bell-function 'ignore)
 
 ;;(require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
 (provide 'init.el)
