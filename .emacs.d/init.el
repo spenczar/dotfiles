@@ -224,6 +224,7 @@
   ;; Use flymake for go!
   (use-package "go-flycheck"
     :load-path (lambda() (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake")))
+  (add-hook 'go-mode-hook 'flycheck-mode)
 )
 
 (put 'narrow-to-region 'disabled nil)
