@@ -197,10 +197,12 @@
   (setq tab-width 4)
 
   ;; Add $GOPATH/bin to exec-path
+  (setenv "GOPATH" (expand-file-name "~/go"))
   (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin")))))
 
   ;; Use flymake for go!
   (use-package "go-flycheck"
+    :ensure nil
     :load-path (lambda() (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake")))
 
   ;; Use go-projectile to improve the GOPATH lookup for godep'd packages
