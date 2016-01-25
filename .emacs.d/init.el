@@ -10,8 +10,15 @@
         '(("elpa" . "http://elpa.gnu.org/packages/")
           ("melpa" . "http://melpa.milkbox.net/packages/")
           ("marmalade" . "http://marmalade-repo.org/packages/")))
-  (package-initialize t)
-)
+  (package-initialize))
+
+;; Project navigation
+(use-package projectile
+  :config
+  (projectile-global-mode 1)
+  (setq projectile-enable-caching t
+        projectile-require-project-root nil)
+  (message "projectile hook hit"))
 
 ;;; OS-dependent settings go here
 (if (string-equal system-type "darwin")
@@ -211,9 +218,13 @@
 
   ;; Add $GOPATH/bin to exec-path
   (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin")))))
+
   ;; Use flymake for go!
   (use-package "go-flycheck"
     :load-path (lambda() (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake")))
+
+  ;; Use go-projectile to improve the GOPATH lookup for godep'd packages
+  (use-package "go-projectile")
 )
 
 (put 'narrow-to-region 'disabled nil)
