@@ -321,15 +321,14 @@
 
   (add-hook 'clojure-mode-hook
             (lambda ()
-              (setq inferior-lisp-program "lein repl")
-              (font-lock-add-keywords
-               nil
-               '(("\\(facts?\\)"
-                  (1 font-lock-keyword-face))
-                 ("(\\(background?\\)"
-                  (1 font-lock-keyword face))))
-              (define-clojure-indent (fact 1))
-              (define-clojure-indent (facts 1)))))
+              (setq inferior-lisp-program "lein repl"))))
+
+;;; aya for better macros
+(use-package auto-yasnippet
+  :config
+  (global-set-key (kbd "C-x {") #'aya-create)
+  (global-set-key (kbd "C-x E") #'aya-expand)
+)
 
 ;;; Visual themes (these belong last)
 ;; Color Theme
