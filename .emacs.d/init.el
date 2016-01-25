@@ -313,6 +313,7 @@
      cider-auto-select-error-buffer t
      cider-repl-history-file "~/.cider-history"
      cider-repl-wrap-history t
+     cider-stacktrace-frames-background-color "#FFFFFF"
      ))
 
   ;; Useful for working with camel-case tokens, like names of Java classes
