@@ -2,11 +2,13 @@
 (eval-when-compile
   (add-to-list 'load-path "~/.emacs.d/use-package/")
   (require 'use-package)
+  (setq use-package-verbose t)
+  (setq use-package-always-ensure t)
   (require 'bind-key)
   (require 'package)
   (setq package-archives
-        '(("melpa" . "http://melpa.milkbox.net/packages/")
-          ("elpa" . "http://elpa.gnu.org/packages/")
+        '(("elpa" . "http://elpa.gnu.org/packages/")
+          ("melpa" . "http://melpa.milkbox.net/packages/")
           ("marmalade" . "http://marmalade-repo.org/packages/")))
   (package-initialize t)
 )
@@ -85,16 +87,6 @@
  version-control t)       ; use versioned backups
 ;;; No sleeping!
 (global-unset-key (kbd "C-z"))
-
-(use-package dired-x
-  :config
-  ;; Hide ~ files in directories
-  (setq-default dired-omit-files-p t)
-  ;; Use human-readable file sizes in dirs
-  (setq dired-listing-switches "-alh")
-  ;; Omit files starting with # or ending with $.
-  (setq dired-omit-files "^#\\|^\\.$\\$")
-)
 
 ;;; Column indication
 ;; make column number mode the default
@@ -175,7 +167,6 @@
 ;;(add-hook 'find-file-hook 'flymake-find-file-hook)
 
 (use-package flycheck
-  :ensure t
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode))
 
@@ -202,7 +193,6 @@
 
 (use-package go-mode
   :mode "\\.go\\'"
-  :ensure t
   :config
   ;; gofmt all go code - use goimports though
   (message "doing the config dance for go!")
@@ -231,7 +221,6 @@
 ;; Web-mode
 (use-package web-mode
   :mode ("\\.html\\'" "\\.mustache\\'")
-  :ensure t
   :bind ("C-c /" . web-mode-element-close)
   :config
   (setq web-mode-code-indent-offset 2
@@ -241,7 +230,6 @@
 ;; JS2 mode
 (use-package js2-mode
   :mode "\\.js$"
-  :ensure t
   :config
   ;; Two-space indentation.
   (setq js2-basic-offset 2)
@@ -252,13 +240,11 @@
 
 ;; Typescript mode
 (use-package typescript-mode
-  :mode "\\.ts$"
-  :ensure t)
+  :mode "\\.ts$")
 
 ;; Use nasm-mode because it provides better x86 formatting
 (use-package nasm-mode
-  :mode "\\.asm"
-  :ensure t)
+  :mode "\\.asm")
 
 (use-package terraform-mode
   :mode "\\.tf$"
@@ -270,12 +256,10 @@
   (show-paren-mode 1)
 
   (use-package rainbow-delimiters
-    :ensure t
     :config
     (rainbow-delimiters-mode))
 
   (use-package paredit
-    :ensure t
     :config
     (enable-paredit-mode))
 
@@ -297,15 +281,12 @@
          ("\\.boot$" . clojure-mode)
          ("\\.cljs.*$" . clojure-mode)
          ("lein-env" . ruby-mode))
-  :ensure t
   :config
   ;; Extra font highlighting for clojure
-  (use-package clojure-mode-extra-font-locking
-    :ensure t)
+  (use-package clojure-mode-extra-font-locking)
 
   ;; Integration with the clojure repl
   (use-package cider
-    :ensure t
     :config
     (setq
      cider-repl-pop-to-buffer-on-connect t
