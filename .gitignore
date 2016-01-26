@@ -1,6 +1,7 @@
 # Compiled emacs files
 *.elc
 projectile-bookmarks.eld
+.emacs.d/projectile.cache
 elpa/
 
 # Folder view configuration files
