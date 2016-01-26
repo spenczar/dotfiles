@@ -297,8 +297,10 @@
 (use-package auto-yasnippet
   :config
   (global-set-key (kbd "C-x {") #'aya-create)
-  (global-set-key (kbd "C-x E") #'aya-expand)
-)
+  (global-set-key (kbd "C-x E") #'aya-expand))
+
+(use-package protobuf-mode
+  :mode "\\.proto$")
 
 ;;; Visual themes (these belong last)
 ;; Color Theme
