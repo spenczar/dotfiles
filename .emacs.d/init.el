@@ -197,10 +197,10 @@
   (use-package "go-flycheck"
     :ensure nil
     :load-path (lambda() (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake")))
+  (add-hook 'go-mode-hook 'flycheck-mode)
 
   ;; Use go-projectile to improve the GOPATH lookup for godep'd packages
-  (use-package "go-projectile")
-)
+  (use-package "go-projectile"))
 
 (put 'narrow-to-region 'disabled nil)
 
