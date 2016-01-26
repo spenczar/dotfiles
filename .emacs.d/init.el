@@ -213,6 +213,9 @@
         web-mode-markup-indent-offset 2)
 )
 
+(use-package json-mode
+  :mode "\\.json$")
+
 ;; JS2 mode
 (use-package js2-mode
   :mode "\\.js$"
