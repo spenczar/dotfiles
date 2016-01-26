@@ -2,14 +2,23 @@
 (eval-when-compile
   (add-to-list 'load-path "~/.emacs.d/use-package/")
   (require 'use-package)
+  (setq use-package-verbose t)
+  (setq use-package-always-ensure t)
   (require 'bind-key)
   (require 'package)
   (setq package-archives
-        '(("melpa" . "http://melpa.milkbox.net/packages/")
-          ("elpa" . "http://elpa.gnu.org/packages/")
+        '(("elpa" . "http://elpa.gnu.org/packages/")
+          ("melpa" . "http://melpa.milkbox.net/packages/")
           ("marmalade" . "http://marmalade-repo.org/packages/")))
-  (package-initialize t)
-)
+  (package-initialize))
+
+;; Project navigation
+(use-package projectile
+  :config
+  (projectile-global-mode 1)
+  (setq projectile-enable-caching t
+        projectile-require-project-root nil)
+  (message "projectile hook hit"))
 
 ;;; OS-dependent settings go here
 (if (string-equal system-type "darwin")
@@ -49,26 +58,6 @@
   )
 
 ;;; Navigation
-;; Enable mouse support if in a terminal
-(unless window-system
-  (use-package mouse
-    :config
-    (global-set-key [mouse-4] '(lambda ()
-				 (interactive)
-				 (scroll-down 1)))
-    (global-set-key [mouse-5] '(lambda ()
-				 (interactive)
-				 (scroll-up 1)))
-    (xterm-mouse-mode t)
-    (defun track-mouse (e))
-    (setq mouse-sel-mode t)))
-
-;; Project navigation
-(use-package projectile
-  :ensure t
-  :config
-  (projectile-global-mode))
-
 
 ;; Manage backup files
 (setq backup-directory-alist
@@ -85,16 +74,6 @@
  version-control t)       ; use versioned backups
 ;;; No sleeping!
 (global-unset-key (kbd "C-z"))
-
-(use-package dired-x
-  :config
-  ;; Hide ~ files in directories
-  (setq-default dired-omit-files-p t)
-  ;; Use human-readable file sizes in dirs
-  (setq dired-listing-switches "-alh")
-  ;; Omit files starting with # or ending with $.
-  (setq dired-omit-files "^#\\|^\\.$\\$")
-)
 
 ;;; Column indication
 ;; make column number mode the default
@@ -175,7 +154,6 @@
 ;;(add-hook 'find-file-hook 'flymake-find-file-hook)
 
 (use-package flycheck
-  :ensure t
   :config
   (add-hook 'after-init-hook #'global-flycheck-mode))
 
@@ -202,7 +180,6 @@
 
 (use-package go-mode
   :mode "\\.go\\'"
-  :ensure t
   :config
   ;; gofmt all go code - use goimports though
   (message "doing the config dance for go!")
@@ -220,19 +197,23 @@
   (setq tab-width 4)
 
   ;; Add $GOPATH/bin to exec-path
+  (setenv "GOPATH" (expand-file-name "~/go"))
   (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin")))))
+
   ;; Use flymake for go!
   (use-package "go-flycheck"
+    :ensure nil
     :load-path (lambda() (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake")))
   (add-hook 'go-mode-hook 'flycheck-mode)
-)
+
+  ;; Use go-projectile to improve the GOPATH lookup for godep'd packages
+  (use-package "go-projectile"))
 
 (put 'narrow-to-region 'disabled nil)
 
 ;; Web-mode
 (use-package web-mode
   :mode ("\\.html\\'" "\\.mustache\\'")
-  :ensure t
   :bind ("C-c /" . web-mode-element-close)
   :config
   (setq web-mode-code-indent-offset 2
@@ -242,7 +223,6 @@
 ;; JS2 mode
 (use-package js2-mode
   :mode "\\.js$"
-  :ensure t
   :config
   ;; Two-space indentation.
   (setq js2-basic-offset 2)
@@ -253,13 +233,11 @@
 
 ;; Typescript mode
 (use-package typescript-mode
-  :mode "\\.ts$"
-  :ensure t)
+  :mode "\\.ts$")
 
 ;; Use nasm-mode because it provides better x86 formatting
 (use-package nasm-mode
-  :mode "\\.asm"
-  :ensure t)
+  :mode "\\.asm")
 
 (use-package terraform-mode
   :mode "\\.tf$"
@@ -271,12 +249,10 @@
   (show-paren-mode 1)
 
   (use-package rainbow-delimiters
-    :ensure t
     :config
     (rainbow-delimiters-mode))
 
   (use-package paredit
-    :ensure t
     :config
     (enable-paredit-mode))
 
@@ -298,15 +274,12 @@
          ("\\.boot$" . clojure-mode)
          ("\\.cljs.*$" . clojure-mode)
          ("lein-env" . ruby-mode))
-  :ensure t
   :config
   ;; Extra font highlighting for clojure
-  (use-package clojure-mode-extra-font-locking
-    :ensure t)
+  (use-package clojure-mode-extra-font-locking)
 
   ;; Integration with the clojure repl
   (use-package cider
-    :ensure t
     :config
     (setq
      cider-repl-pop-to-buffer-on-connect t
@@ -314,6 +287,7 @@
      cider-auto-select-error-buffer t
      cider-repl-history-file "~/.cider-history"
      cider-repl-wrap-history t
+     cider-stacktrace-frames-background-color "#FFFFFF"
      ))
 
   ;; Useful for working with camel-case tokens, like names of Java classes
@@ -321,15 +295,14 @@
 
   (add-hook 'clojure-mode-hook
             (lambda ()
-              (setq inferior-lisp-program "lein repl")
-              (font-lock-add-keywords
-               nil
-               '(("\\(facts?\\)"
-                  (1 font-lock-keyword-face))
-                 ("(\\(background?\\)"
-                  (1 font-lock-keyword face))))
-              (define-clojure-indent (fact 1))
-              (define-clojure-indent (facts 1)))))
+              (setq inferior-lisp-program "lein repl"))))
+
+;;; aya for better macros
+(use-package auto-yasnippet
+  :config
+  (global-set-key (kbd "C-x {") #'aya-create)
+  (global-set-key (kbd "C-x E") #'aya-expand)
+)
 
 ;;; Visual themes (these belong last)
 ;; Color Theme
