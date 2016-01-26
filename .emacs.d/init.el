@@ -155,7 +155,8 @@
 
 (use-package flycheck
   :config
-  (add-hook 'after-init-hook #'global-flycheck-mode))
+  (add-hook 'after-init-hook #'global-flycheck-mode)
+  (set-face-attribute 'flycheck-error nil :background "red" :foreground "white"))
 
 ;; Path configuration from shell
 (defun set-exec-path-from-shell-PATH ()
@@ -167,14 +168,6 @@
 
 (setq exec-path (append exec-path '("/sw/bin")))
 
-
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(flymake-errline ((((class color)) (:background "red"))))
- '(flymake-warnline ((((class color)) (:background "yellow")))))
 
 ;;; Golang stuff
 
