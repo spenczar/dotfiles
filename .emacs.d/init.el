@@ -302,6 +302,9 @@
 (use-package protobuf-mode
   :mode "\\.proto$")
 
+(use-package puppet-mode
+  :mode "\\.pp$")
+
 ;;; Visual themes (these belong last)
 ;; Color Theme
 (add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
