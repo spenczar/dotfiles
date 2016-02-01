@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # From https://gist.github.com/dpiddy/c4f3d146ae4027a69bc1
 
@@ -16,6 +16,10 @@
 if [ -z "$GOPATH" ]; then
     echo "Missing GOPATH" >&2
     exit 1
+fi
+
+if [[ $GOPATH == *":"* ]]; then
+    exit 0
 fi
 
 orig_gopath="$GOPATH"
