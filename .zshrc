@@ -16,7 +16,7 @@ export ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[green]%}["
 export ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
 export ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[red]%}*%{$fg[green]%}"
 export ZSH_THEME_GIT_PROMPT_CLEAN=""
-
+export LSCOLORS="Hxfxcxdxbxegedabagacad"
 
 # Connect to an emacs server; start a new one if it's not already set up.
 alias ec="emacsclient -nw -a '' -c"
