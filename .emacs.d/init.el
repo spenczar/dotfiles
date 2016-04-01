@@ -136,6 +136,9 @@
     (("melpa" . "http://melpa.milkbox.net/packages/")
      ("elpa" . "http://elpa.gnu.org/packages/")
      ("marmalade" . "http://marmalade-repo.org/packages/"))))
+ '(package-selected-packages
+   (quote
+    (puppet-mode protobuf-mode paredit rainbow-delimiters auto-yasnippet clojure-mode terraform-mode nasm-mode typescript-mode js2-mode json-mode web-mode go-mode flycheck projectile)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(puppet-include-indent 2)
@@ -316,3 +319,9 @@
 ;;(require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
 (provide 'init.el)
 ;;; init.el ends here
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
