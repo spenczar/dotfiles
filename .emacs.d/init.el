@@ -20,6 +20,19 @@
         projectile-require-project-root nil)
   (message "projectile hook hit"))
 
+(use-package ag
+  :config
+  (setq ag-arguments
+   (quote
+    ("--smart-case"
+     "--nogroup"
+     "--column"
+     "--ignore" "vendor"
+     "--ignore" "_tools"
+     "--ignore" "_vendor"
+     "--ignore" "__vendor"
+     "--"))))
+
 ;;; OS-dependent settings go here
 (if (string-equal system-type "darwin")
     (progn
@@ -82,8 +95,10 @@
 ;;; Formatting
 ;; Avoid using tabs
 (setq-default indent-tabs-mode nil)
-;; Fill to 79 columns
-(setq fill-column 79)
+;; Fill to 80 columns
+(setq-default fill-column 80)
+;; Use single-space-after-period for sentences.
+(setq sentence-end-double-space nil)
 ;; Delete trailing whitespace before save
 (add-hook 'before-save-hook 'delete-trailing-whitespace)
 ;; Files should have a trailing newline.
@@ -128,6 +143,7 @@
    (quote
     ("#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36")))
  '(magit-diff-use-overlays nil)
+ '(message-default-charset (quote iso-8859-1))
  '(nrepl-message-colors
    (quote
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
@@ -136,9 +152,10 @@
     (("melpa" . "http://melpa.milkbox.net/packages/")
      ("elpa" . "http://elpa.gnu.org/packages/")
      ("marmalade" . "http://marmalade-repo.org/packages/"))))
+ '(package-enable-at-startup nil)
  '(package-selected-packages
    (quote
-    (puppet-mode protobuf-mode paredit rainbow-delimiters auto-yasnippet clojure-mode terraform-mode nasm-mode typescript-mode js2-mode json-mode web-mode go-mode flycheck projectile)))
+    (ag go-guru dockerfile-mode groovy-mode markdown-mode yaml-mode php-mode puppet-mode protobuf-mode paredit rainbow-delimiters auto-yasnippet clojure-mode terraform-mode nasm-mode typescript-mode js2-mode json-mode web-mode go-mode flycheck projectile)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(puppet-include-indent 2)
@@ -147,6 +164,8 @@
  '(term-default-bg-color "#002b36")
  '(term-default-fg-color "#839496")
  '(tidy-shell-command "/usr/local/bin/tidy --tidy-mark false -indent")
+ '(use-package-always-ensure t)
+ '(use-package-verbose t)
  '(weechat-color-list
    (quote
     (unspecified "#002b36" "#073642" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#839496" "#657b83")))
@@ -196,6 +215,11 @@
   (setenv "GOPATH" (expand-file-name "~/go"))
   (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin")))))
 
+  (use-package "go-guru"
+    :ensure nil
+    :load-path (lambda ()  (concat (getenv "GOPATH") "/src/github.com/dominikh/go-mode.el")))
+  (go-guru-hl-identifier-mode)
+
   ;; Use flymake for go!
   (use-package "go-flycheck"
     :ensure nil
@@ -209,7 +233,7 @@
 
 ;; Web-mode
 (use-package web-mode
-  :mode ("\\.html\\'" "\\.mustache\\'")
+  :mode ("\\.html\\'" "\\.mustache\\'" "\\.jsx\\'")
   :bind ("C-c /" . web-mode-element-close)
   :config
   (setq web-mode-code-indent-offset 2
@@ -302,11 +326,39 @@
   (global-set-key (kbd "C-x {") #'aya-create)
   (global-set-key (kbd "C-x E") #'aya-expand))
 
+(use-package js2-mode
+  :config
+  (setq
+   js2-basic-offset 4
+   )
+  :mode "\\.js$")
+
 (use-package protobuf-mode
   :mode "\\.proto$")
 
 (use-package puppet-mode
   :mode "\\.pp$")
+
+(use-package actionscript-mode
+  :config
+  (setq
+   actionscript-indent-level 8
+   )
+	(setq
+	 indent-tabs-mode t
+   c-basic-offset 4
+   tab-width 4
+	 )
+  :mode "\\.as$")
+
+(use-package php-mode
+  :mode "\\.php$")
+
+(use-package yaml-mode
+  :mode "\\.yaml$")
+
+(use-package markdown-mode
+  :mode "\\.md$")
 
 ;;; Visual themes (these belong last)
 ;; Color Theme
@@ -325,3 +377,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+(put 'downcase-region 'disabled nil)

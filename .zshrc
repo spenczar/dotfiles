@@ -20,24 +20,32 @@ export LSCOLORS="Hxfxcxdxbxegedabagacad"
 
 # Connect to an emacs server; start a new one if it's not already set up.
 alias ec="emacsclient -nw -a '' -c"
-
-if [[ -n $SSH_CONNECTION ]]; then
-    export EDITOR='ec'
-else
-    export EDITOR='nano'
-fi
+export EDITOR="emacsclient -nw -a '' -c"
 
 # Arcanist
-alias land="arc land --squash --delete-remote"
+alias land="arc land --squash"
 
 # Go:
 export GOPATH=$HOME/go
-export PATH=$PATH:$HOME/go1.6/bin
+export GOROOT=$HOME/go1.8.1
+export PATH=$PATH:$GOROOT/bin
+
 # Add go binaries:
 export PATH=$PATH:/usr/local/opt/go/libexec/bin:$GOPATH/bin
 export PATH="$PATH:/usr/local/go/bin"
+
+# Python:
+export PATH=$PATH:/Library/Frameworks/Python.framework/Versions/Current/bin
+export PYTHONPATH=$HOME/lib/python2.7/site-packages
+mkdir -p $PYTHONPATH
 
 # Custom binaries
 export PATH="$PATH:$HOME/bin"
 # RVM
 export PATH="$PATH:$HOME/.rvm/bin"
+
+# Postgres binaries:
+export PATH="$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin"
+
+export NVM_DIR="/Users/snelson/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
