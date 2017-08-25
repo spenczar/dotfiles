@@ -115,7 +115,9 @@
  '(cua-overwrite-cursor-color "#b58900")
  '(cua-read-only-cursor-color "#859900")
  '(flycheck-eslintrc (substitute-in-file-name "$HOME/.eslintrc"))
+ '(flycheck-go-build-install-deps t)
  '(frame-background-mode (quote dark))
+ '(global-flycheck-mode t)
  '(help-at-pt-display-when-idle (quote (flymake-overlay)) nil (help-at-pt))
  '(help-at-pt-timer-delay 0.0)
  '(help-at-pt-timer-display 0.9)
@@ -155,7 +157,7 @@
  '(package-enable-at-startup nil)
  '(package-selected-packages
    (quote
-    (ag go-guru dockerfile-mode groovy-mode markdown-mode yaml-mode php-mode puppet-mode protobuf-mode paredit rainbow-delimiters auto-yasnippet clojure-mode terraform-mode nasm-mode typescript-mode js2-mode json-mode web-mode go-mode flycheck projectile)))
+    (text-mode toml-mode ag go-guru dockerfile-mode groovy-mode markdown-mode yaml-mode php-mode puppet-mode protobuf-mode paredit rainbow-delimiters auto-yasnippet clojure-mode terraform-mode nasm-mode typescript-mode js2-mode json-mode web-mode go-mode flycheck projectile)))
  '(pos-tip-background-color "#073642")
  '(pos-tip-foreground-color "#93a1a1")
  '(puppet-include-indent 2)
@@ -223,7 +225,7 @@
   ;; Use flymake for go!
   (use-package "go-flycheck"
     :ensure nil
-    :load-path (lambda() (concat (getenv "GOPATH") "/src/github.com/dougm/goflymake")))
+    :load-path (lambda() (concat (getenv "GOPATH") "/src/github.com/spenczar/goflymake")))
   (add-hook 'go-mode-hook 'flycheck-mode)
 
   ;; Use go-projectile to improve the GOPATH lookup for godep'd packages
@@ -378,3 +380,12 @@
  ;; If there is more than one, they won't work right.
  )
 (put 'downcase-region 'disabled nil)
+
+(define-derived-mode git-commit-file-mode text-mode "GitCommit"
+  "Major mode for writing git commit files."
+  (setq fill-column 70)
+  (auto-fill-mode +1)
+  (set (make-local-variable 'comment-start-skip) "#.*$"))
+
+(setq auto-mode-alist
+      (cons (cons "COMMIT_EDITMSG" 'git-commit-file-mode) auto-mode-alist))

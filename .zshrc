@@ -27,7 +27,7 @@ alias land="arc land --squash"
 
 # Go:
 export GOPATH=$HOME/go
-export GOROOT=$HOME/go1.8.1
+export GOROOT=$HOME/go1.9
 export PATH=$PATH:$GOROOT/bin
 
 # Add go binaries:
