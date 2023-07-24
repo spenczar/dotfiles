@@ -34,6 +34,14 @@ export EDITOR="emacsclient -nw -a '' -c"
 # Custom binaries
 export PATH="$PATH:$HOME/bin"
 
+# if pyenv is installed, use it
+if whence pyenv > /dev/null; then
+    export PYENV_ROOT="$HOME/.pyenv"
+    command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+    eval "$(pyenv init -)"
+    # Virtualenv management
+    if whence pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
+fi
 
 # Add go binaries:
 export PATH=$PATH:/usr/local/opt/go/libexec/bin:$GOPATH/bin
