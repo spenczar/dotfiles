@@ -34,10 +34,6 @@ export EDITOR="emacsclient -nw -a '' -c"
 # Custom binaries
 export PATH="$PATH:$HOME/bin"
 
-# Go:
-export GOPATH=$HOME/go
-export GOROOT=$HOME/go1.9
-export PATH=$PATH:$GOROOT/bin
 
 # Add go binaries:
 export PATH=$PATH:/usr/local/opt/go/libexec/bin:$GOPATH/bin
