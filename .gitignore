@@ -19,6 +19,9 @@ Thumbs.db
 # Compiled Python files
 *.pyc
 
+# Python build junk
+*.egg-info
+
 # Compiled C++ files
 *.out
 
@@ -35,3 +38,4 @@ node_modules
 
 # Go test binaries
 *.test
+*-venv

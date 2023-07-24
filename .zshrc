@@ -1,7 +1,15 @@
 # Path to your oh-my-zsh installation.
 export ZSH=$HOME/.oh-my-zsh
 
-plugins=(git colored-man colorize vagrant zsh-syntax-highlighting z ssh-agent)
+# Set PATH, MANPATH, etc., for Homebrew.
+if [ -f /opt/homebrew/bin/brew ]; then
+    export HOMEBREW_PREFIX="/opt/homebrew";
+    export HOMEBREW_CELLAR="/opt/homebrew/Cellar";
+    export HOMEBREW_REPOSITORY="/opt/homebrew";
+    export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}";
+    export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:";
+    export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
+fi
 
 export PATH=$HOME/bin:"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH=$PATH:$HOME/bin/arcanist/bin:$HOME/go/bin:$HOME/.rvm/bin
