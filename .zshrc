@@ -13,6 +13,7 @@ fi
 
 export PATH=$HOME/bin:"/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 export PATH=$PATH:$HOME/bin/arcanist/bin:$HOME/go/bin:$HOME/.rvm/bin
+plugins=(git colored-man-pages colorize vagrant z ssh-agent)
 
 source $ZSH/oh-my-zsh.sh
 
