@@ -31,8 +31,6 @@ export LSCOLORS="Hxfxcxdxbxegedabagacad"
 alias ec="emacsclient -nw -a '' -c"
 export EDITOR="emacsclient -nw -a '' -c"
 
-# Arcanist
-alias land="arc land --squash"
 
 # Go:
 export GOPATH=$HOME/go
