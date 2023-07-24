@@ -47,10 +47,6 @@ fi
 # Go bins
 export PATH=$PATH:$HOME/go/bin
 
-# Python:
-export PATH=$PATH:/Library/Frameworks/Python.framework/Versions/Current/bin
-export PYTHONPATH=$HOME/lib/python2.7/site-packages
-mkdir -p $PYTHONPATH
 
 # Custom binaries
 export PATH="$PATH:$HOME/bin"
