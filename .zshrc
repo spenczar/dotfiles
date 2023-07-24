@@ -18,8 +18,8 @@ export PATH="$PATH:$HOME/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
 source $ZSH/oh-my-zsh.sh
 
 export PROMPT=$'
-%{$fg[green]%}%n@%m %{$fg[blue]%}%D{[%I:%M:%S]} %{$reset_color%}%{$fg[white]%}[%~]%{$reset_color%} $(git_prompt_info)\
-%{$fg[blue]%}->%{$fg[blue]%} %#%{$reset_color%} '
+%{$fg[green]%}%m %{$fg[blue]%}%D{[%Y-%m-%d %H:%M:%S]} %{$reset_color%}%{$fg[white˘]%}[%~]%{$reset_color%} $(git_prompt_info)\
+%{$fg[blue]%}$%{$reset_color%} '
 
 export ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[green]%}["
 export ZSH_THEME_GIT_PROMPT_SUFFIX="]%{$reset_color%}"
