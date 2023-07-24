@@ -43,9 +43,8 @@ if whence pyenv > /dev/null; then
     if whence pyenv-virtualenv-init > /dev/null; then eval "$(pyenv virtualenv-init -)"; fi
 fi
 
-# Add go binaries:
-export PATH=$PATH:/usr/local/opt/go/libexec/bin:$GOPATH/bin
-export PATH="$PATH:/usr/local/go/bin"
+# Go bins
+export PATH=$PATH:$HOME/go/bin
 
 # Python:
 export PATH=$PATH:/Library/Frameworks/Python.framework/Versions/Current/bin
