@@ -9,6 +9,7 @@ if [ -f /opt/homebrew/bin/brew ]; then
     export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}";
     export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:";
     export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
+    export PATH="/opt/homebrew/opt/curl/bin:$PATH"
 fi
 
 plugins=(git colored-man-pages colorize vagrant z ssh-agent)
