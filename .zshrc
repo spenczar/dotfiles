@@ -31,6 +31,8 @@ export LSCOLORS="Hxfxcxdxbxegedabagacad"
 alias ec="emacsclient -nw -a '' -c"
 export EDITOR="emacsclient -nw -a '' -c"
 
+# Custom binaries
+export PATH="$PATH:$HOME/bin"
 
 # Go:
 export GOPATH=$HOME/go
