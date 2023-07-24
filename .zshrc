@@ -48,10 +48,6 @@ fi
 export PATH=$PATH:$HOME/go/bin
 
 
-# Custom binaries
-export PATH="$PATH:$HOME/bin"
-# RVM
-export PATH="$PATH:$HOME/.rvm/bin"
 
 # Postgres binaries:
 export PATH="$PATH:/Applications/Postgres.app/Contents/Versions/latest/bin"
