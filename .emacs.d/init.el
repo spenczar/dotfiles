@@ -1,391 +1,208 @@
-;; Initialization
-(eval-when-compile
-  (add-to-list 'load-path "~/.emacs.d/use-package/")
-  (require 'use-package)
-  (setq use-package-verbose t)
-  (setq use-package-always-ensure t)
-  (require 'bind-key)
-  (require 'package)
-  (setq package-archives
-        '(("elpa" . "http://elpa.gnu.org/packages/")
-          ("melpa" . "http://melpa.milkbox.net/packages/")
-          ("marmalade" . "http://marmalade-repo.org/packages/")))
-  (package-initialize))
+;;;;;;;;;;;;;;;;;;;;;;
+;;; Package Management
+;;;;;;;;;;;;;;;;;;;;;;
 
-;; Project navigation
-(use-package projectile
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+;; Use Quelpa to install packaged from source, and do it via use-package.
+
+(unless (package-installed-p 'quelpa)
+  (package-initialize)
+  (package-refresh-contents)
+  (package-install 'quelpa))
+
+(unless (package-installed-p 'quelpa-use-package)
+  (quelpa
+   '(quelpa-use-package
+     :fetcher git
+     :url "https://github.com/quelpa/quelpa-use-package.git")))
+(require 'quelpa-use-package)
+(require 'use-package)
+(setq use-package-always-ensure t)
+(setq use-package-ensure-function 'quelpa)
+
+;;;;;;;;;;;;;;;
+;;; UI features
+;;;;;;;;;;;;;;;
+(use-package vertico
+  :init (vertico-mode))
+
+(use-package company)
+
+(use-package marginalia
+  :init (marginalia-mode))
+
+(use-package consult
+  :bind (
+	 ("C-x b" . consult-buffer)
+         ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+         ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+         ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+	 ("M-s r" . consult-ripgrep)
+	 ("M-s l" . consult-line)
+         ("M-s L" . consult-line-multi)
+	 ("M-s d" . consult-find)))
+
+(use-package savehist
+  :init (savehist-mode))
+
+(use-package rg)
+
+(use-package highlight-indentation)
+
+(use-package visual-fill-column)
+
+(use-package solarized-theme
+  :config (load-theme 'solarized-selenized-light t))
+
+;; Hide uninteresting files by default
+(add-hook 'dired-mode-hook
+	  (lambda ()
+	    (dired-omit-mode 1)))
+
+
+(setq frame-background-mode 'dark)
+(tool-bar-mode 0)
+(scroll-bar-mode 0)
+(menu-bar-mode 0)
+
+;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Generic coding tools
+;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package gnu-elpa-keyring-update)
+(use-package lsp-mode)
+
+
+(use-package magit)
+
+(use-package projectile)
+
+(use-package xref
+  :init
+  (setq xref-search-program 'ripgrep))
+
+(use-package editorconfig
+  :ensure t
   :config
-  (projectile-global-mode 1)
-  (setq projectile-enable-caching t
-        projectile-require-project-root nil)
-  (message "projectile hook hit"))
+  (editorconfig-mode 1))
 
-(use-package ag
+;;;;;;;;;;;
+;;; Copilot
+;;;;;;;;;;;
+(defvar swn/no-copilot-modes '(term-mode
+			       vterm-mode
+			       comint-mode
+			       dired-mode
+			       dired-mode-hook
+			       debugger-mode
+			       compilation-mode
+			       compilation-mode-hook)
+  "modes which should not be enabled for copilot")
+
+(defun swn/copilot-disable-predicate ()
+  "predicate to disable copilot"
+  (member major-mode swn/no-copilot-modes))
+
+(use-package s)
+
+;; (use-package copilot
+;;   :quelpa (copilot.el :fetcher github
+;;                       :repo "copilot-emacs/copilot.el"
+;;                       :files ("dist" "*.el"))
+;;   :hook prog-mode
+;;   :bind
+;;   (("M-n" . copilot-accept-completion-by-line)
+;;   ("M-TAB" . copilot-accept-completion-by-word)  
+;;   ("M-RET" . copilot-accept-completion))
+;;   :config
+;;   (add-to-list 'copilot-disable-predicates 'swn/copilot-disable-predicate))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Language-specific behavior
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package go-mode
   :config
-  (setq ag-arguments
-   (quote
-    ("--smart-case"
-     "--nogroup"
-     "--column"
-     "--ignore" "vendor"
-     "--ignore" "_tools"
-     "--ignore" "_vendor"
-     "--ignore" "__vendor"
-     "--"))))
+  (setq gofmt-command "goimports")
+  (add-hook 'before-save-hook 'gofmt-before-save))
 
-;;; OS-dependent settings go here
-(if (string-equal system-type "darwin")
-    (progn
-      ;; copying and pasting to main clipboard
-      (defun pbcopy ()
-	(interactive)
-	(call-process-region (point) (mark) "pbcopy")
-	(setq deactivate-mark t))
+(use-package rust-mode)
 
-      (defun pbpaste ()
-	(interactive)
-	(call-process-region (point) (if mark-active (mark) (point)) "pbpaste" t t))
+;;; Python
+(use-package python)
+(use-package blacken)
+(use-package python-docstring)
 
-      (defun pbcut ()
-	(interactive)
-	(pbcopy)
-	(delete-region (region-beginning) (region-end)))
+(use-package pyvenv
+  :config
+  (pyvenv-mode))
 
-      (global-set-key (kbd "S-c") 'pbcopy)
-      (global-set-key (kbd "S-v") 'pbpaste)
-      (global-set-key (kbd "S-x") 'pbcut)
-      )
-  (progn
-    ;; On Linux, I use suckless terminal, which maps backspace to C-h;
-    ;; C-M-h is thus what emacs receives when pressing
-    ;; M-backspace. I'd like M-backspace to delete the previous word.
-    (global-set-key (kbd "C-M-h") 'backward-kill-word)
-    ;; Lets give a shot towards clipboard integration
-    (setq
-     x-select-enable-clipboard t
-     x-select-enable-primary t
-     save-interprogram-paste-before-kill t
-     )
+;;; C++
+(use-package clang-format
+  :config
+  (setq clang-format-style-option "file"))
 
-    )
-  )
+(use-package irony
+  :hook (c++-mode . irony-mode))
 
-;;; Navigation
+(use-package rtags)
 
-;; Manage backup files
-(setq backup-directory-alist
-      `((".*" . ,temporary-file-directory)))
+(use-package cuda-mode)
 
-(setq auto-save-file-name-transforms
-      `((".*" ,temporary-file-directory t)))
+;;; Misc languages
+(use-package zig-mode)
+(use-package dockerfile-mode)
+(use-package yaml-mode)
+(use-package json-mode)
+(use-package markdown-mode
+  :config
+  (setq markdown-fontify-code-blocks-natively t)
+  (setq markdown-command "multimarkdown")
+  :bind (:map markdown-mode-map
+	      ("M-n" . nil)
+	      ("M-RET" . nil)
+	      ("M-TAB" . nil)))
+(use-package typescript-mode)
 
-(setq
- backup-by-copying t      ; don't clobber symlinks
- delete-old-versions t
- kept-new-versions 6
- kept-old-versions 2
- version-control t)       ; use versioned backups
-;;; No sleeping!
-(global-unset-key (kbd "C-z"))
+(use-package cmake-mode)
 
-;;; Column indication
-;; make column number mode the default
-(setq column-number-mode t)
 
-;;; Formatting
-;; Avoid using tabs
-(setq-default indent-tabs-mode nil)
-;; Fill to 80 columns
-(setq-default fill-column 80)
-;; Use single-space-after-period for sentences.
-(setq sentence-end-double-space nil)
-;; Delete trailing whitespace before save
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
-;; Files should have a trailing newline.
-(setq require-final-newline t)
+(defun swn-get-credentials (host)
+  (let ((creds (auth-source-search :host host)))
+    (if creds
+        (auth-info-password (car creds))
+      (warn "No credentials found for host: %s" host)
+      nil)))
 
+(require 'ert)
+
+(ert-deftest test-swn-get-credentials ()
+  (let ((host "test-host")
+        (test-credentials '((:host "test-host" :user "test-user" :secret "test-password"))))
+    ;; Mock auth-source-search to return test-credentials    
+    (flet ((auth-source-search (&rest args) test-credentials))
+      (let ((password (swn-get-credentials host)))
+        (should (equal password "test-password"))))))
+
+(use-package gptel
+  :quelpa (gptel :fetcher github
+                 :repo "karthink/gptel")
+  :config
+  (setq gptel-api-key (swn-get-credentials "openai-api")))
+
+(provide 'init.el)
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(asm-comment-char 47)
- '(cua-global-mark-cursor-color "#2aa198")
- '(cua-normal-cursor-color "#839496")
- '(cua-overwrite-cursor-color "#b58900")
- '(cua-read-only-cursor-color "#859900")
- '(flycheck-eslintrc (substitute-in-file-name "$HOME/.eslintrc"))
- '(flycheck-go-build-install-deps t)
- '(frame-background-mode (quote dark))
- '(global-flycheck-mode t)
- '(help-at-pt-display-when-idle (quote (flymake-overlay)) nil (help-at-pt))
- '(help-at-pt-timer-delay 0.0)
- '(help-at-pt-timer-display 0.9)
- '(highlight-changes-colors (quote ("#d33682" "#6c71c4")))
- '(highlight-symbol-colors
-   (--map
-    (solarized-color-blend it "#002b36" 0.25)
-    (quote
-     ("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2"))))
- '(highlight-symbol-foreground-color "#93a1a1")
- '(highlight-tail-colors
-   (quote
-    (("#073642" . 0)
-     ("#546E00" . 20)
-     ("#00736F" . 30)
-     ("#00629D" . 50)
-     ("#7B6000" . 60)
-     ("#8B2C02" . 70)
-     ("#93115C" . 85)
-     ("#073642" . 100))))
- '(hl-bg-colors
-   (quote
-    ("#7B6000" "#8B2C02" "#990A1B" "#93115C" "#3F4D91" "#00629D" "#00736F" "#546E00")))
- '(hl-fg-colors
-   (quote
-    ("#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36" "#002b36")))
- '(magit-diff-use-overlays nil)
- '(message-default-charset (quote iso-8859-1))
- '(nrepl-message-colors
-   (quote
-    ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
- '(package-archives
-   (quote
-    (("melpa" . "http://melpa.milkbox.net/packages/")
-     ("elpa" . "http://elpa.gnu.org/packages/")
-     ("marmalade" . "http://marmalade-repo.org/packages/"))))
- '(package-enable-at-startup nil)
+ '(dired-omit-files "\\`[.]?#\\'")
  '(package-selected-packages
-   (quote
-    (text-mode toml-mode ag go-guru dockerfile-mode groovy-mode markdown-mode yaml-mode php-mode puppet-mode protobuf-mode paredit rainbow-delimiters auto-yasnippet clojure-mode terraform-mode nasm-mode typescript-mode js2-mode json-mode web-mode go-mode flycheck projectile)))
- '(pos-tip-background-color "#073642")
- '(pos-tip-foreground-color "#93a1a1")
- '(puppet-include-indent 2)
- '(require-final-newline t)
- '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#073642" 0.2))
- '(term-default-bg-color "#002b36")
- '(term-default-fg-color "#839496")
- '(tidy-shell-command "/usr/local/bin/tidy --tidy-mark false -indent")
- '(use-package-always-ensure t)
- '(use-package-verbose t)
- '(weechat-color-list
-   (quote
-    (unspecified "#002b36" "#073642" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#839496" "#657b83")))
- '(xterm-color-names
-   ["#073642" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#eee8d5"])
- '(xterm-color-names-bright
-   ["#002b36" "#cb4b16" "#586e75" "#657b83" "#839496" "#6c71c4" "#93a1a1" "#fdf6e3"]))
-;;(add-hook 'find-file-hook 'flymake-find-file-hook)
-
-(use-package flycheck
-  :config
-  (add-hook 'after-init-hook #'global-flycheck-mode)
-  (set-face-attribute 'flycheck-error nil :background "red" :foreground "white"))
-
-;; Path configuration from shell
-(defun set-exec-path-from-shell-PATH ()
-  (let ((path-from-shell (shell-command-to-string "$SHELL -i -c 'echo $PATH'")))
-    (setenv "PATH" path-from-shell)
-    (setq exec-path (split-string path-from-shell path-separator))))
-(if window-system (set-exec-path-from-shell-PATH))
-(setenv "PATH" (concat (getenv "PATH") ":/sw/bin"))
-
-(setq exec-path (append exec-path '("/sw/bin")))
-
-
-;;; Golang stuff
-
-(use-package go-mode
-  :mode "\\.go\\'"
-  :config
-  ;; gofmt all go code - use goimports though
-  (message "doing the config dance for go!")
-  (setq gofmt-command "goimports")
-  (add-hook 'before-save-hook 'gofmt-before-save)
-
-  (defun go-mode-settings ()
-    (local-set-key (kbd "M-.") 'godef-jump)
-    (setq compile-command "go vet && go test -v && go build")
-    (setq tab-width 2)
-    (define-key (current-local-map) "\C-c\C-c" 'compile))
-  (add-hook 'go-mode-hook 'go-mode-settings)
-
-  ;; Use tabs of width 4
-  (setq tab-width 4)
-
-  ;; Add $GOPATH/bin to exec-path
-  (setenv "GOPATH" (expand-file-name "~/go"))
-  (setq exec-path (append exec-path (list (expand-file-name (concat (getenv "GOPATH") "/bin")))))
-
-  (use-package "go-guru"
-    :ensure nil
-    :load-path (lambda ()  (concat (getenv "GOPATH") "/src/github.com/dominikh/go-mode.el")))
-  (go-guru-hl-identifier-mode)
-
-  ;; Use flymake for go!
-  (use-package "go-flycheck"
-    :ensure nil
-    :load-path (lambda() (concat (getenv "GOPATH") "/src/github.com/spenczar/goflymake")))
-  (add-hook 'go-mode-hook 'flycheck-mode)
-
-  ;; Use go-projectile to improve the GOPATH lookup for godep'd packages
-  (use-package "go-projectile"))
-
-(put 'narrow-to-region 'disabled nil)
-
-;; Web-mode
-(use-package web-mode
-  :mode ("\\.html\\'" "\\.mustache\\'" "\\.jsx\\'")
-  :bind ("C-c /" . web-mode-element-close)
-  :config
-  (setq web-mode-code-indent-offset 2
-        web-mode-markup-indent-offset 2)
-)
-
-(use-package json-mode
-  :mode "\\.json$")
-
-;; JS2 mode
-(use-package js2-mode
-  :mode "\\.js$"
-  :config
-  ;; Two-space indentation.
-  (setq js2-basic-offset 2)
-  ;; Allow usage of 'require' as a global variable.
-  (setq js2-global-externs '("require"))
-  ;; Highlight ECMA builtin functions
-  (setq js2-highlight-level 3))
-
-;; Typescript mode
-(use-package typescript-mode
-  :mode "\\.ts$")
-
-;; Use nasm-mode because it provides better x86 formatting
-(use-package nasm-mode
-  :mode "\\.asm")
-
-(use-package terraform-mode
-  :mode "\\.tf$"
-  :config
-  (setq terraform-indent-level 2))
-
-;; Common settings for lisp languages.
-(defun lisp-settings ()
-  (show-paren-mode 1)
-
-  (use-package rainbow-delimiters
-    :config
-    (rainbow-delimiters-mode))
-
-  (use-package paredit
-    :config
-    (enable-paredit-mode))
-
-  (turn-on-eldoc-mode))
-
-(add-hook 'clojure-mode-hook 'lisp-settings)
-(add-hook 'cider-mode-hook 'lisp-settings)
-(add-hook 'eval-expression-minibuffer-setup-hook 'lisp-settings)
-(add-hook 'emacs-lisp-mode-hook 'lisp-settings)
-(add-hook 'ielm-mode-hook 'lisp-settings)
-(add-hook 'lisp-mode-hook 'lisp-settings)
-(add-hook 'lisp-interaction-mode-hook 'lisp-settings)
-(add-hook 'scheme-mode-hook 'lisp-settings)
-
-;;; Clojure
-;; Clojure-mode
-(use-package clojure-mode
-  :mode (("\\.clj" . clojure-mode)
-         ("\\.boot$" . clojure-mode)
-         ("\\.cljs.*$" . clojure-mode)
-         ("lein-env" . ruby-mode))
-  :config
-  ;; Extra font highlighting for clojure
-  (use-package clojure-mode-extra-font-locking)
-
-  ;; Integration with the clojure repl
-  (use-package cider
-    :config
-    (setq
-     cider-repl-pop-to-buffer-on-connect t
-     cider-show-error-buffer t
-     cider-auto-select-error-buffer t
-     cider-repl-history-file "~/.cider-history"
-     cider-repl-wrap-history t
-     cider-stacktrace-frames-background-color "#FFFFFF"
-     ))
-
-  ;; Useful for working with camel-case tokens, like names of Java classes
-  (add-hook 'clojure-mode-hook 'subword-mode)
-
-  (add-hook 'clojure-mode-hook
-            (lambda ()
-              (setq inferior-lisp-program "lein repl"))))
-
-;;; aya for better macros
-(use-package auto-yasnippet
-  :config
-  (global-set-key (kbd "C-x {") #'aya-create)
-  (global-set-key (kbd "C-x E") #'aya-expand))
-
-(use-package js2-mode
-  :config
-  (setq
-   js2-basic-offset 4
-   )
-  :mode "\\.js$")
-
-(use-package protobuf-mode
-  :mode "\\.proto$")
-
-(use-package puppet-mode
-  :mode "\\.pp$")
-
-(use-package actionscript-mode
-  :config
-  (setq
-   actionscript-indent-level 8
-   )
-	(setq
-	 indent-tabs-mode t
-   c-basic-offset 4
-   tab-width 4
-	 )
-  :mode "\\.as$")
-
-(use-package php-mode
-  :mode "\\.php$")
-
-(use-package yaml-mode
-  :mode "\\.yaml$")
-
-(use-package markdown-mode
-  :mode "\\.md$")
-
-;;; Visual themes (these belong last)
-;; Color Theme
-(add-to-list 'custom-theme-load-path "~/.emacs.d/themes/emacs-color-theme-solarized")
-(load-theme 'solarized t)
-
-;; no bell
-(setq ring-bell-function 'ignore)
-
-;;(require 'ld-mode "/Users/spencer/go/src/github.com/spenczar/ld-mode/ld-mode.el")
-(provide 'init.el)
-;;; init.el ends here
+   '(cython-mode gptel company lsp-mode gnu-elpa-keyring-update lv ht f zig-mode reformatter rtags irony cuda-mode typescript-mode markdown-mode json-mode json-snatcher yaml-mode dockerfile-mode pyvenv python-docstring blacken rust-mode visual-fill-column vertico solarized-theme s rg quelpa-use-package projectile marginalia magit highlight-indentation go-mode editorconfig copilot.el consult)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-(put 'downcase-region 'disabled nil)
-
-(define-derived-mode git-commit-file-mode text-mode "GitCommit"
-  "Major mode for writing git commit files."
-  (setq fill-column 70)
-  (auto-fill-mode +1)
-  (set (make-local-variable 'comment-start-skip) "#.*$"))
-
-(setq auto-mode-alist
-      (cons (cons "COMMIT_EDITMSG" 'git-commit-file-mode) auto-mode-alist))
